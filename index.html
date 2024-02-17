@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="mask-icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"> <!-- for Safari-->
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <title>Spatiality</title>
+    
+    <script src="third-party/p5.js"></script>
+    <script src="third-party/p5.easycam.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="nav-section left">
+          <h1>
+            <a href="/" id="name">Spatiality</a></h1>
+          → <dropdown-menu class="dropdown-big">
+              <span slot="button-text">Projects</span>
+            </dropdown-menu>
+          → New Project
+        </div>
+        
+        <div class="nav-section right">
+          <dropdown-menu class="dropdown-right dropdown-wide">
+            <span slot="button-text">Settings</span>
+            <ul>
+              <li>
+                <label>OpenAI API Key</label>
+                <div id="open-api-key-form">
+                  <input type="password" id="openai-api-key" autocomplete="new-password" />
+                  <button id="toggle-openai-key-visibility">👁️</button>
+                </div>
+              </li>
+            </ul>
+          </dropdown-menu>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div id="chat">
+        <div id="messages"></div>
+        <div id="input">
+          <textarea id="prompt-input"></textarea>
+          <button id="send-prompt">Send</button>
+        </div>
+      </div>
+
+      <div id="simulation">
+        <div class="toolbar">
+          <button id="reset-physics">Reset</button>
+          <button id="toggle-physics">Start/Stop</button>
+          
+          <dropdown-menu>
+            <span slot="button-text">Objects</span>
+            <button id="objects-add-cube">Add cube</button>
+            <button id="objects-add-sphere">Add sphere</button>
+          </dropdown-menu>
+
+          <dropdown-menu>
+            <span slot="button-text">View</span>
+            <label><input type="checkbox" id="toggle-axes" checked> Axes</label><br>
+            <label><input type="checkbox" id="toggle-outlines" checked> Object Outlines</label><br>
+            <label><input type="checkbox" id="toggle-objects" checked> Object Fills</label><br>
+            <label><input type="checkbox" id="toggle-darkmode"> Dark</label>
+          </dropdown-menu>
+          
+          <dropdown-menu>
+            <span slot="button-text">LiDAR</span>
+            <button id="cast-rays">Cast Rays</button>
+            <button id="save-points">Save Points</button>
+            <button id="clear-points">Clear Points</button>
+          </dropdown-menu>
+
+        </div>
+        <div id="sketch"></div>
+      </div>
+      
+    </main>
+
+    <script type="module" src="/main.js"></script>
+    <script src="src/dropdown-menu.js"></script>
+  </body>
+</html>

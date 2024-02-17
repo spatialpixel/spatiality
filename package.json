@@ -1,0 +1,19 @@
+{
+  "name": "chatter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "openai": "^4.24.1",
+    "uuid": "^9.0.1"
+  }
+}
