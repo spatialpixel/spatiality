@@ -302,7 +302,6 @@ class EasyCam {
         var mouse = cam.mouse;
         // insideViewport is not working. @awmartin
         // if(mouse.insideViewport(x, y)){
-          console.debug('wheel event')
           mouse.mwheel = event.deltaY * 0.01;
           if(mouse.mouseWheelAction) mouse.mouseWheelAction();
         // }
@@ -655,7 +654,6 @@ class EasyCam {
   mouseWheelZoom() {
     var cam = this;
     var mouse = cam.mouse;
-    console.debug('cam', mouse.mwheel * cam.scale_zoomwheel);
     cam.dampedZoom.addForce(mouse.mwheel * cam.scale_zoomwheel);
   }
 

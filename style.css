@@ -473,6 +473,10 @@ a {
   transition: border 0.1s ease-in-out;
 }
 
+p a {
+  border-bottom: 3px solid var(--text-links);
+}
+
 a:hover {
   border-color: var(--text-color);
 }
