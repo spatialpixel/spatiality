@@ -84,7 +84,7 @@ class EasyCam {
     if(args.center   === undefined) args.center    = [0, 0, 0];
     if(args.rotation === undefined) args.rotation  = Rotation.identity();
     if(args.viewport === undefined) args.viewport  = [0, 0, renderer.width, renderer.height];
-    if(args.offset   === undefined) args.offset    = [bounds.x + window.scrollX, bounds.y + window.scrollY];
+    if(args.offset   === undefined) args.offset    = [bounds.x + 0, bounds.y + 0];
 
     // library info
     this.INFO = INFO;
@@ -156,7 +156,7 @@ class EasyCam {
     // add a handler for window resizing
     window.addEventListener('resize', function (e){
       let p = renderer.elt.getBoundingClientRect();
-      cam.offset = [p.x + window.scrollX, p.y + window.scrollY];
+      cam.offset = [p.x + 0, p.y + 0];
     });
 
     // mouse/touch/key action handler
@@ -236,8 +236,8 @@ class EasyCam {
       mousedown : function(event){
         var mouse = cam.mouse;
         // Account for canvas shift:
-        var offX = cam.offset[0] - window.scrollX,
-            offY = cam.offset[1] - window.scrollY;
+        var offX = cam.offset[0] - 0, //window.scrollX, Why??
+            offY = cam.offset[1] - 0; //window.scrollY;
 
         if(event.button === 0) mouse.button |= mouse.BUTTON.LMB;
         if(event.button === 1) mouse.button |= mouse.BUTTON.MMB;
@@ -288,8 +288,8 @@ class EasyCam {
 
       dblclick : function(event){
         // Account for canvas shift:
-        var offX = cam.offset[0] - window.scrollX,
-            offY = cam.offset[1] - window.scrollY;
+        var offX = cam.offset[0] - 0, //window.scrollX,
+            offY = cam.offset[1] - 0; //window.scrollY;
 
         if(cam.mouse.insideViewport(event.x - offX, event.y - offY)){
           cam.reset();
@@ -320,8 +320,8 @@ class EasyCam {
         var avg_d = 0.0;
         var i, dx, dy, count = touches.length;
         // Account for canvas shift:
-        var offX = cam.offset[0] - window.scrollX,
-            offY = cam.offset[1] - window.scrollY;
+        var offX = cam.offset[0] - 0, //window.scrollX, Why?
+            offY = cam.offset[1] - 0; //window.scrollY;
 
         // center, averaged touch position
         for(i = 0; i < count; i++){
