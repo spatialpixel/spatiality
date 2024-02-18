@@ -358,8 +358,9 @@ template {
   --background-color: white;
   --standard-padding: 6px;
   --long-text-weight: normal;
-  --primary-color: #DB454F; /* red */
-  --accent-color: #FF9108; /* rgb(255, 69, 0, 0.6); */ /* originally 'orangered' */
+  --primary-color: #eac451;
+  --primary-color-lightened: #f4e1a8;
+  --accent-color: #eac451;
   --text-links: #ccc;
   --home-big-font-size: 3.6rem;
   --nav-font-size: 2.0rem;
@@ -476,6 +477,12 @@ a:hover {
   border-color: var(--text-color);
 }
 
+hr {
+  border: none;
+  background-color: black;
+  height: 2px;
+}
+
 /* Normal text list items. */
 li {
   font-weight: normal;
@@ -525,10 +532,10 @@ button {
   font-size: 1rem;
 }
 button:hover {
-  background-color: #afa;
+  background-color: var(--primary-color-lightened);
 }
 button:active {
-  background-color: #0f0;
+  background-color: var(--primary-color);
 }
 
 main {
@@ -572,12 +579,20 @@ main {
 }
 
 #simulation {
+  position: relative;
   width: 49%;
   border: 2px solid black;
   height: calc(100vh - 90px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+#simulation .footnotes {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: var(--standard-padding);
+  color: gray;
 }
 .toolbar {
   height: 40px;

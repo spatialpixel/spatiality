@@ -5,6 +5,8 @@
     --dropdown-width: 160px;
     --dropdown-button-font-size: 1rem;
     --dropdown-button-border: 2px solid black;
+    --primary-color: #eac451;
+    --primary-color-lightened: #f4e1a8;
   }
   
   .dropdown {
@@ -53,10 +55,10 @@
     font-size: var(--dropdown-button-font-size);
   }
   button:hover {
-    background-color: #afa;
+    background-color: var(--primary-color-lightened);
   }
   button:active {
-    background-color: #0f0;
+    background-color: var(--primary-color);
   }
 
   ::slotted(button) {
@@ -69,10 +71,10 @@
     border: none !important;
   }
   ::slotted(button:hover) {
-    background-color: #afa;
+    background-color: var(--primary-color-lightened);
   }
   ::slotted(button:active) {
-    background-color: #0f0;
+    background-color: var(--primary-color);
   }
   ::slotted(ul) {
     list-style-type: none;

@@ -59,8 +59,12 @@
 
       <div id="simulation">
         <div class="toolbar">
-          <button id="reset-physics">Reset</button>
-          <button id="toggle-physics">Start/Stop</button>
+          <dropdown-menu>
+            <span slot="button-text">Physics</span>
+            <button id="toggle-physics">Start/Stop</button>
+            <hr>
+            <button id="reset-physics">Reset Scene</button>
+          </dropdown-menu>
           
           <dropdown-menu>
             <span slot="button-text">Objects</span>
@@ -86,6 +90,7 @@
 
         </div>
         <div id="sketch"></div>
+        <div class="footnotes">left-click + drag = rotate | middle-click + drag = pan | right-click + drag = zoom</div>
       </div>
       
     </main>

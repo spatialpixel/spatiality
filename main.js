@@ -39,12 +39,14 @@ const sketch = p => {
     objectFillColor: p.color('black'),
     objectStrokeColor: p.color('gray'),
     pointCloudColor: p.color(255, 255, 255, 128),
+    highlightColor: p.color('#eac451'),
   };
   const lightModeColors = {
     backgroundColor: p.color('white'),
     objectFillColor: p.color('white'),
     objectStrokeColor: p.color('gray'),
     pointCloudColor: p.color(0, 0, 0, 128),
+    highlightColor: p.color('#eac451'),
   };
 
   const interfaceState = {
@@ -147,7 +149,6 @@ const sketch = p => {
     // We only want click events that originated on the canvas itself,
     // otherwise we get events for the entire page, because p5.js is weird.
     if (event.target.className !== 'p5Canvas') { return; }
-    console.debug('mouseClicked', event);
 
     const mousePosition = Helpers.screenToWorld(p, p.mouseX, p.mouseY);
     const cameraPosition = Helpers.getCameraPosition(p);
