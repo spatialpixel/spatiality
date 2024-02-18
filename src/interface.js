@@ -15,7 +15,10 @@ export function initializeKeypressed (elementId, handler) {
 export function initializeButton (elementId, handler) {
   const element = document.querySelector(elementId);
   if (element) {
-    element.addEventListener('click', handler);
+    element.addEventListener('click', event => {
+      event.stopPropagation();
+      handler(event);
+    });
   }
 }
 

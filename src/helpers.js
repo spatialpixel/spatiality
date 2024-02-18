@@ -41,3 +41,43 @@ export function quaternionToEuler (quat) {
 
   return { x: roll, y: pitch, z: yaw };
 }
+
+export function getCameraPosition (p) {
+  // Calculate the inverse of the modelview matrix to get the camera position
+  const modelViewMatrix = p._renderer.uMVMatrix.copy();
+  const invertedView = new p5.Matrix();
+  invertedView.invert(modelViewMatrix);
+  const cameraPosition = p.createVector(invertedView.mat4[12], invertedView.mat4[13], invertedView.mat4[14]);
+  return cameraPosition;
+}
+
+export function screenToWorld (p, x, y) {
+  // Get the current 3D model-view and projection matrices.
+  const modelViewMatrix = p._renderer.uMVMatrix.copy();
+  const projectionMatrix = p._renderer.uPMatrix.copy();
+
+  // Invert the projection matrix
+  const invertedProjection = new p5.Matrix();
+  invertedProjection.invert(projectionMatrix);
+  
+  // Invert the model-view matrix.
+  const invertedView = new p5.Matrix();
+  invertedView.invert(modelViewMatrix);
+
+  // Map the screen coordinates to the world space
+  const screenX = x * 2 / p.width - 1;
+  const screenY = -y * 2 / p.height + 1;
+  const screenZ = 0.00001;
+  
+  const eyeSpaceCoords = invertedProjection.multiplyVec4(screenX, screenY, screenZ, 1);
+
+  // Apply the inverse model-view matrix to get the world coordinates
+  
+  const worldCoordinates = invertedView.multiplyVec4(eyeSpaceCoords[0], eyeSpaceCoords[1], eyeSpaceCoords[2], eyeSpaceCoords[3]);
+  worldCoordinates[0] /= worldCoordinates[3];
+  worldCoordinates[1] /= worldCoordinates[3];
+  worldCoordinates[2] /= worldCoordinates[3];
+
+  // Return the 3D coordinates.
+  return p.createVector(worldCoordinates[0], worldCoordinates[1], worldCoordinates[2]);
+}

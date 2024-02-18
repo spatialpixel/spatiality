@@ -103,6 +103,10 @@ export class PhysicsSimulation extends Simulation {
 
       this.availableFunctions.add_objects({ objects: [cubeParams] });
     });
+    
+    Interface.initializeButton('#remove-selected', () => {
+      this.worldState.removeSelected();
+    });
   }
   
   reset () {
@@ -122,7 +126,7 @@ export class PhysicsSimulation extends Simulation {
     this.lidar.draw(p, interfaceState);
   }
   
-  mouseClicked (p, interfaceState, cameraPosition, dir) {
+  mouseClicked (event, p, interfaceState, cameraPosition, dir) {
     const instance = this.getObjectsIntersectingRay(cameraPosition, dir);
     if (instance) {
       if (p.keyCode === p.SHIFT) {
@@ -191,7 +195,7 @@ class WorldState {
   }
   
   deselect (instance) {
-    _.remove(this.selected, instance);
+    _.remove(this.selected, obj => obj === instance);
   }
   
   deselectAll () {
@@ -200,6 +204,14 @@ class WorldState {
   
   isSelected (instance) {
     return this.selected.includes(instance);
+  }
+  
+  removeSelected () {
+    // Clone the array of selected objects since we're mutating it.
+    const _selected = _.clone(this.selected);
+    _.forEach(_selected, obj => {
+      this.removeObject(obj);
+    });
   }
   
   addObject (instance) {
@@ -222,15 +234,17 @@ class WorldState {
     }
   }
   
-  removeObject (obj) {
-    if (this.isSelected(obj)) {
-      this.deselect(obj);
+  removeObject (objectToRemove) {
+    console.debug("Removing object:", objectToRemove);
+    
+    if (this.isSelected(objectToRemove)) {
+      this.deselect(objectToRemove);
     }
-
-    this.world.removeCollider(obj.collider);
-    this.world.removeRigidBody(obj.rigidBody);
-
-    _.remove(this.objects, obj);
+    
+    this.world.removeCollider(objectToRemove.collider);
+    this.world.removeRigidBody(objectToRemove.rigidBody);
+    
+    _.remove(this.objects, obj => obj === objectToRemove);
   }
   
   reset () {
