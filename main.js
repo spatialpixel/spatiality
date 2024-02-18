@@ -6,6 +6,7 @@
  */
 
 import './style.css';
+import './src/dropdown-menu.js';
 
 import * as Interface from './src/interface.js';
 import * as Helpers from './src/helpers.js';
@@ -60,6 +61,9 @@ const sketch = p => {
   };
 
   p.setup = async function () {
+    const canvasSize = getCanvasSize();
+    p.createCanvas(canvasSize.width, canvasSize.height, p.WEBGL);
+
     state = new State();
 
     // Create the simulation frist.
@@ -77,9 +81,6 @@ const sketch = p => {
     // Initialize everything.
     await state.initialize(interfaceState);
 
-    const canvasSize = getCanvasSize();
-    p.createCanvas(canvasSize.width, canvasSize.height, p.WEBGL);
-    
     interfaceState.cam = p.createEasyCam({ rotation: [ 0, 0, 0.4794255, 0.8775826 ] });
 
     // Disable right click for the benefit of EasyCam.

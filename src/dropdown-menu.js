@@ -4,7 +4,7 @@ class DropdownMenu extends HTMLElement {
         super();
 
         // Fetch the template HTML file
-        fetch('src/dropdown-menu-template.html')
+        fetch('dropdown-menu-template.html')
             .then(response => response.text())
             .then(html => {
                 // Create a template element and set its innerHTML to the fetched HTML
