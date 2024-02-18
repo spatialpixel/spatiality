@@ -179,7 +179,7 @@ class EasyCam {
 
       mouseDragLeft   : cam.mouseDragRotate.bind(cam),
       mouseDragCenter : cam.mouseDragPan   .bind(cam),
-      mouseDragRight  : cam.mouseDragZoom  .bind(cam),
+      mouseDragRight  : cam.mouseDragPan   .bind(cam), // Change to pan because middle buttons are rare.
       mouseWheelAction: cam.mouseWheelZoom .bind(cam),
 
       touchmoveSingle : cam.mouseDragRotate.bind(cam),
@@ -300,10 +300,12 @@ class EasyCam {
         var x = event.x;
         var y = event.y;
         var mouse = cam.mouse;
-        if(mouse.insideViewport(x, y)){
+        // insideViewport is not working. @awmartin
+        // if(mouse.insideViewport(x, y)){
+          console.debug('wheel event')
           mouse.mwheel = event.deltaY * 0.01;
           if(mouse.mouseWheelAction) mouse.mouseWheelAction();
-        }
+        // }
       },
 
 
@@ -653,6 +655,7 @@ class EasyCam {
   mouseWheelZoom() {
     var cam = this;
     var mouse = cam.mouse;
+    console.debug('cam', mouse.mwheel * cam.scale_zoomwheel);
     cam.dampedZoom.addForce(mouse.mwheel * cam.scale_zoomwheel);
   }
 
