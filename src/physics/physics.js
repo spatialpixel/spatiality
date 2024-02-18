@@ -68,8 +68,8 @@ export class PhysicsSimulation extends Simulation {
       this.reset();
     });
     
-    Interface.initializeButton('#toggle-physics', () => {
-      interfaceState.animatePhysics = !interfaceState.animatePhysics;
+    Interface.initializeCheckbox('#toggle-physics', (value, event) => {
+      interfaceState.animatePhysics = value;
     });
     
     Interface.initializeButton('#objects-add-cube', () => {

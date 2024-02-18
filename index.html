@@ -27,6 +27,7 @@
             <a href="/" id="name">Spatiality</a></h1>
           → <dropdown-menu class="dropdown-big">
               <span slot="button-text">Projects</span>
+              No projects yet.
             </dropdown-menu>
           → New Project
         </div>
@@ -61,8 +62,16 @@
       <div id="simulation">
         <div class="toolbar">
           <dropdown-menu>
+            <span slot="button-text">View</span>
+            <label><input type="checkbox" id="toggle-axes" checked> Axes</label><br>
+            <label><input type="checkbox" id="toggle-outlines" checked> Object Outlines</label><br>
+            <label><input type="checkbox" id="toggle-objects" checked> Object Fills</label><br>
+            <label><input type="checkbox" id="toggle-darkmode"> Dark</label>
+          </dropdown-menu>
+
+          <dropdown-menu>
             <span slot="button-text">Physics</span>
-            <button id="toggle-physics">Start/Stop</button>
+            <label><input type="checkbox" id="toggle-physics" checked> Compute physics</label><br>
             <hr>
             <button id="reset-physics">Reset Scene</button>
           </dropdown-menu>
@@ -73,14 +82,6 @@
             <button id="objects-add-sphere">Add sphere</button>
             <button id="remove-selected">Remove selected</button>
           </dropdown-menu>
-
-          <dropdown-menu>
-            <span slot="button-text">View</span>
-            <label><input type="checkbox" id="toggle-axes" checked> Axes</label><br>
-            <label><input type="checkbox" id="toggle-outlines" checked> Object Outlines</label><br>
-            <label><input type="checkbox" id="toggle-objects" checked> Object Fills</label><br>
-            <label><input type="checkbox" id="toggle-darkmode"> Dark</label>
-          </dropdown-menu>
           
           <dropdown-menu>
             <span slot="button-text">LiDAR</span>
@@ -88,7 +89,6 @@
             <button id="save-points">Save Points</button>
             <button id="clear-points">Clear Points</button>
           </dropdown-menu>
-
         </div>
         <div id="sketch"></div>
         <div class="footnotes">left-click + drag = rotate | middle-click + drag = pan | right-click + drag = zoom</div>
