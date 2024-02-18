@@ -174,6 +174,7 @@ export class OpenAIInterface {
   // we want to show but aren't actually messages of the chat itself.
   async chat (prompt) {
     try {
+      console.log(`Attempting to chat via OpenAI API with prompt:`, prompt);
       if (!this._openai) {
         this.instantiate();
       }
@@ -209,7 +210,7 @@ export class OpenAIInterface {
       if (responseMessage.tool_calls) {
         const tool_names = responseMessage.tool_calls.map(t => t.function.name).join(', ');
 
-        this.addMessageToList('→ ' + (responseContent || `Need to call: ${tool_names}`));
+        this.addMessageToList('→ ' + (responseContent || `Need to call a function: ${tool_names}`));
         
         // In this case, the response has asked to call one or more tools to get enough information
         // to complete the chat.
@@ -217,16 +218,16 @@ export class OpenAIInterface {
         for (const tool_call of responseMessage.tool_calls) {
           const function_name = tool_call.function.name;
   
-          this.addMessageToList(`··· Asking to call function ${function_name}`);
+          this.addMessageToList(`··· Asking to call function: ${function_name}`);
           
           const function_to_call = this.state.availableFunctions[function_name];
           const function_args = JSON.parse(tool_call.function.arguments);
   
-          console.debug('Asking to call function:', function_name, 'with arguments:', function_args);
+          console.log('Asking to call function:', function_name, ', with the arguments:', function_args);
   
           const function_response = function_to_call(function_args);
           
-          console.debug('→ function response:', function_response);
+          console.log('→ function response:', function_response);
           
           // Extend conversation with function's response.
           const functionResponseMessage = {
