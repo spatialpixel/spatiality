@@ -6,6 +6,7 @@
  */
 
 import * as AddObjectsFunction from './function_add_objects.js';
+import * as RemoveObjectsFunction from './function_remove_objects.js';
 import * as GetSpatialLayoutFunction from './function_get_spatial_layout.js';
 
 import { Simulation } from '../simulation.js';
@@ -18,6 +19,7 @@ import * as OpenAI from '../openai.js';
 // Setup for the rigid-body physics engine, Rapier.
 // Found at https://rapier.rs/
 import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
+import _ from 'lodash';
 
 
 export class PhysicsSimulation extends Simulation {
@@ -25,7 +27,6 @@ export class PhysicsSimulation extends Simulation {
     super();
     this.worldState = null;
     this.lidar = null;
-    
   }
   
   get defaultContext () {
@@ -36,6 +37,7 @@ export class PhysicsSimulation extends Simulation {
     return [
       GetSpatialLayoutFunction.schema,
       AddObjectsFunction.schema,
+      RemoveObjectsFunction.schema,
     ];
   }
   
@@ -46,7 +48,10 @@ export class PhysicsSimulation extends Simulation {
       },
       "add_objects": args => {
         return AddObjectsFunction.add_objects(this.worldState, args);
-      }
+      },
+      "remove_objects": args => {
+        return RemoveObjectsFunction.remove_objects(this.worldState, args);
+      },
     };
   }
   
@@ -129,8 +134,8 @@ class WorldState {
     this.objects = [];
   }
   
-  addObject () {
-    
+  addObject (instance) {
+    this.objects.push(instance);
   }
   
   addGroundPlane () {
@@ -139,10 +144,20 @@ class WorldState {
     this.world.createCollider(groundColliderDesc);
   }
   
+  removeObjectById (id) {
+    const objectToRemove = _.find(this.objects, obj => obj.id === id);
+    if (objectToRemove) {
+      this.removeObject(objectToRemove);
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
   removeObject (obj) {
     this.world.removeCollider(obj.collider);
     this.world.removeRigidBody(obj.rigidBody);
-    Helpers.removeItemOnce(this.objects, obj);
+    _.remove(this.objects, obj);
   }
   
   reset () {

@@ -17,6 +17,11 @@ export const schema = {
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "A unique identifier for this object, typically a UUID.",
+              },
+
               "objectType": {
                 "type": "string",
                 "description": "A single world noting the type of object being added in lowercase.",
@@ -107,7 +112,7 @@ export function add_objects (worldState, params) {
     }
 
     if (instance) {
-      worldState.objects.push(instance);
+      worldState.addObject(instance);
       tr.push(instance.json);
     }
   }

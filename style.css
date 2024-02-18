@@ -356,7 +356,7 @@ template {
 :root {
   --text-color: #333;
   --background-color: white;
-  --standard-padding: 8px;
+  --standard-padding: 6px;
   --long-text-weight: normal;
   --primary-color: #DB454F; /* red */
   --accent-color: #FF9108; /* rgb(255, 69, 0, 0.6); */ /* originally 'orangered' */
