@@ -17,9 +17,9 @@ export class Project {
     this.simulation = simulation;
   }
   
-  initialize (interfaceState) {
-    this.simulation.initialize(interfaceState);
-    this.chat.initialize(this.simulation.defaultContext);
+  async initialize (interfaceState) {
+    await this.simulation.initialize(interfaceState);
+    await this.chat.initialize(this.simulation.defaultContext);
   }
   
   restore () {

@@ -38,4 +38,8 @@ export class Simulation {
   draw (p, interfaceState) {
     
   }
+  
+  mouseClicked (p, interfaceState, cameraPosition, dir) {
+    
+  }
 }

@@ -16,8 +16,6 @@ export class Chat {
     this.id = uuidv4();
     this.model = "gpt-4-1106-preview";
     this.messages = null;
-    
-    console.log('Creating a new OpenAI chat:', this.id);
   }
   
   addMessage (message) {

@@ -116,10 +116,56 @@ export class PhysicsSimulation extends Simulation {
     }
     
     for (const obj of this.worldState.objects) {
-      obj.draw(p);
+      obj.draw(p, interfaceState);
     }
     
     this.lidar.draw(p, interfaceState);
+  }
+  
+  mouseClicked (p, interfaceState, cameraPosition, dir) {
+    const instance = this.getObjectsIntersectingRay(cameraPosition, dir);
+    if (instance) {
+      if (p.keyCode === p.SHIFT) {
+        this.worldState.addToSelection(instance);
+      } else {
+        this.worldState.selectObject(instance);
+      }
+    } else {
+      this.worldState.deselectAll();
+    }
+  }
+  
+  getObjectsIntersectingRay (origin, direction) {
+    const ray = new this.worldState.RAPIER.Ray(origin, direction);
+    const maxToi = 100.0;
+    const solid = true;
+    
+    let instance
+    this.worldState.world.intersectionsWithRay(ray, maxToi, solid, (hit) => {
+      // Callback called on each collider hit by the ray.
+
+      // let hitPoint = ray.pointAt(hit.toi);
+      // console.debug("Collider", hit, "hit at point", hitPoint, "with normal", hit.normal);
+      // console.debug("simulation object:", hit.collider.parent().userData.parent);
+
+      try {
+        const parent = hit.collider.parent()
+        if (parent) {
+          instance = parent.userData.parent;
+          return false;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      return true; // false = stop searching for more hits
+    });
+    
+    if (!instance) {
+      return null;
+    } else {
+      return instance;
+    }
   }
 }
 
@@ -132,6 +178,28 @@ class WorldState {
     this.world = new RAPIER.World(gravity);
     
     this.objects = [];
+    
+    this.selected = [];
+  }
+  
+  selectObject (instance) {
+    this.selected = [instance];
+  }
+  
+  addToSelection (instance) {
+    this.selected.push(instance);
+  }
+  
+  deselect (instance) {
+    _.remove(this.selected, instance);
+  }
+  
+  deselectAll () {
+    this.selected = [];
+  }
+  
+  isSelected (instance) {
+    return this.selected.includes(instance);
   }
   
   addObject (instance) {
@@ -155,8 +223,13 @@ class WorldState {
   }
   
   removeObject (obj) {
+    if (this.isSelected(obj)) {
+      this.deselect(obj);
+    }
+
     this.world.removeCollider(obj.collider);
     this.world.removeRigidBody(obj.rigidBody);
+
     _.remove(this.objects, obj);
   }
   

@@ -45,6 +45,10 @@ class RigidObject {
     this.collider = null;
 
     this.objectTypeName = 'Generic';
+    
+    this.rigidBody.userData = {
+      parent: this
+    };
   }
   
   get length () {
@@ -71,8 +75,14 @@ class RigidObject {
     this.dimensions.height = x;
   }
   
-  draw (p) {
+  draw (p, interfaceState) {
     if (!this.alive) { return; }
+    
+    if (this.worldState.isSelected(this)) {
+      p.fill(p.color('gold'));
+    } else {
+      p.fill(p.color(interfaceState.colorScheme.objectFillColor));
+    }
 
     p.push();
     
@@ -89,13 +99,13 @@ class RigidObject {
       p.rotateY(rotation.y);
       p.rotateX(rotation.x);
   
-      this.drawShape(p);
+      this.drawShape(p, interfaceState);
     }
     
     p.pop();
   }
   
-  drawShape (p) {
+  drawShape (p, interfaceState) {
     // To be overridden.
   }
   

@@ -57,7 +57,7 @@ const sketch = p => {
     cam: null,
   };
 
-  p.setup = function () {
+  p.setup = async function () {
     state = new State();
 
     // Create the simulation frist.
@@ -73,7 +73,7 @@ const sketch = p => {
     state.openai = new OpenAI.OpenAIInterface(state, addMessageToList);
 
     // Initialize everything.
-    state.initialize(interfaceState);
+    await state.initialize(interfaceState);
 
     const canvasSize = getCanvasSize();
     p.createCanvas(canvasSize.width, canvasSize.height, p.WEBGL);
@@ -142,6 +142,68 @@ const sketch = p => {
     p.resizeCanvas(eltSize.width, eltSize.height);
     interfaceState.cam.update();
   }
+  
+  p.mouseClicked = () => {
+    const mousePosition = screenToWorld(p.mouseX, p.mouseY);
+    const cameraPosition = getCameraPosition();
+
+    const dir = p5.Vector.sub(mousePosition, cameraPosition);
+    // console.debug(mousePosition, cameraPosition, dir);
+
+    state.currentSimulation.mouseClicked(p, interfaceState, mousePosition, dir);
+  }
+  
+  function getCameraPosition () {
+    // Calculate the inverse of the modelview matrix to get the camera position
+    const modelViewMatrix = p._renderer.uMVMatrix.copy();
+    const invertedView = new p5.Matrix();
+    invertedView.invert(modelViewMatrix);
+    const cameraPosition = p.createVector(invertedView.mat4[12], invertedView.mat4[13], invertedView.mat4[14]);
+    return cameraPosition;
+  }
+  
+  function screenToWorld (x, y) {
+    // Get the current 3D model-view and projection matrices
+    const modelViewMatrix = p._renderer.uMVMatrix.copy();
+    const projectionMatrix = p._renderer.uPMatrix.copy();
+    // console.debug(modelViewMatrix, projectionMatrix);
+  
+    // Invert the projection matrix
+    const invertedProjection = new p5.Matrix();
+    // invertedProjection.set(projectionMatrix);
+    invertedProjection.invert(projectionMatrix);
+    
+    const invertedView = new p5.Matrix();
+    // invertedView.set(modelViewMatrix);
+    invertedView.invert(modelViewMatrix);
+  
+    // Get the viewport
+    // const viewport = [0, 0, p.width, p.height];
+  
+    // Map the screen coordinates to the world space
+    const screenX = x * 2 / p.width - 1;
+    const screenY = -y * 2 / p.height + 1;
+    const screenZ = 0.00001;
+    
+    const eyeSpaceCoords = invertedProjection.multiplyVec4(screenX, screenY, screenZ, 1);
+  
+    // Apply the inverse model-view matrix to get the world coordinates
+    
+    const worldCoordinates = invertedView.multiplyVec4(eyeSpaceCoords[0], eyeSpaceCoords[1], eyeSpaceCoords[2], eyeSpaceCoords[3]);
+    worldCoordinates[0] /= worldCoordinates[3];
+    worldCoordinates[1] /= worldCoordinates[3];
+    worldCoordinates[2] /= worldCoordinates[3];
+    
+    const s = 1;
+    worldCoordinates[0] /= s;
+    worldCoordinates[1] /= s;
+    worldCoordinates[2] /= s;
+  
+    // Return the 3D coordinates
+    return p.createVector(worldCoordinates[0], worldCoordinates[1], worldCoordinates[2]);
+  }
+
+
 } // end sketch function
 
 function getHostElement () {
@@ -168,3 +230,4 @@ if (document.readyState === 'complete') {
 } else {
   document.addEventListener("DOMContentLoaded", onReady);
 }
+
