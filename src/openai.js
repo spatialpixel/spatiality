@@ -57,6 +57,15 @@ export class OpenAIInterface {
     this.addStorageBehaviorToApiKeyInput();
     this.addToggleVisibilityButton();
     this.initializePromptInputs();
+    this.updateApiNoticeVisibility();
+  }
+  
+  updateApiNoticeVisibility () {
+    if (this.hasApiKey) {
+      Interface.hideElementById('api-key-notice');
+    } else {
+      Interface.showElementById('api-key-notice');
+    }
   }
   
   addStorageBehaviorToApiKeyInput () {
@@ -65,6 +74,7 @@ export class OpenAIInterface {
     apiKeyInput.addEventListener('change', event => {
       const key = event.target.value;
       _this.apiKey = key;
+      _this.updateApiNoticeVisibility();
     });
     
     if (this.hasApiKey) {
@@ -137,6 +147,8 @@ export class OpenAIInterface {
   }
   
   instantiate () {
+    this.updateApiNoticeVisibility();
+
     if (!this.hasApiKey) {
       alert("Remember to enter your OpenAI API key.");
       return false;

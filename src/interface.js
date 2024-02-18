@@ -40,3 +40,17 @@ export function drawAxes (p, size=1) {
   p.stroke(p.color('blue'));
   p.line(0, 0, 0, 0, 0, size);
 }
+
+export function showElementById (id) {
+  const elt = document.getElementById(id);
+  if (elt) {
+    elt.style.display = '';
+  }
+}
+
+export function hideElementById (id) {
+  const elt = document.getElementById(id);
+  if (elt) {
+    elt.style.display = 'none';
+  }
+}

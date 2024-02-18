@@ -640,3 +640,7 @@ label {
   border: none;
   background-color: transparent;
 }
+#api-key-notice {
+  font-size: 1.2rem;
+  background-color: var(--accent-color);
+}
