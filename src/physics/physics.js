@@ -115,6 +115,9 @@ export class PhysicsSimulation extends Simulation {
   }
   
   draw (p, interfaceState) {
+    if (!this.worldState) { return; }
+    if (!this.worldState.world) { return; }
+
     if (interfaceState.animatePhysics) {
       this.worldState.world.step();
     }
@@ -122,8 +125,10 @@ export class PhysicsSimulation extends Simulation {
     for (const obj of this.worldState.objects) {
       obj.draw(p, interfaceState);
     }
-    
-    this.lidar.draw(p, interfaceState);
+
+    if (this.lidar) {    
+      this.lidar.draw(p, interfaceState);
+    }
   }
   
   mouseClicked (event, p, interfaceState, cameraPosition, dir) {
