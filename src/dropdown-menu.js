@@ -40,5 +40,4 @@ class DropdownMenu extends HTMLElement {
 }
 
 // Define the custom element
-console.debug('Defining dropdown-menu')
 customElements.define('dropdown-menu', DropdownMenu);

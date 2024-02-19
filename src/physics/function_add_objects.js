@@ -19,7 +19,7 @@ export const schema = {
             "properties": {
               "id": {
                 "type": "string",
-                "description": "A unique identifier for this object, typically a UUID.",
+                "description": "A unique identifier for this object, always a UUID.",
               },
 
               "objectType": {
@@ -52,19 +52,19 @@ export const schema = {
                 "properties": {
                   "x": {
                     "type": "number",
-                    "description": "The x quaternion rotation value."
+                    "description": "The x quaternion rotation value. This should always be a number. The default value should be 0."
                   },
                   "y": {
                     "type": "number",
-                    "description": "The y quaternion rotation value."
+                    "description": "The y quaternion rotation value. This should always be a number. The default value should be 0."
                   },
                   "z": {
                     "type": "number",
-                    "description": "The z quaternion rotation value."
+                    "description": "The z quaternion rotation value. This should always be a number. The default value should be 0."
                   },
                   "w": {
                     "type": "number",
-                    "description": "The w quaternion rotation value."
+                    "description": "The w quaternion rotation value. This should always be a number. The default value should be 0."
                   }
                 }
               }, // end rotation property
@@ -75,15 +75,15 @@ export const schema = {
                 "properties": {
                   "length": {
                     "type": "number",
-                    "description": "The length of the object."
+                    "description": "The length of the object. This should always be a number. The default value should be 1."
                   },
                   "width": {
                     "type": "number",
-                    "description": "The width of the object."
+                    "description": "The width of the object. This should always be a number. The default value should be 1."
                   },
                   "height": {
                     "type": "number",
-                    "description": "The height of the object."
+                    "description": "The height of the object. This should always be a number. The default value should be 1."
                   }
                 }
               } // end dimensions property
@@ -92,7 +92,8 @@ export const schema = {
           } // end items
         }
       } // end properties
-    } // parameters
+    }, // end parameters
+    "required": [""]
   }
 };
 
@@ -104,9 +105,9 @@ export function add_objects (worldState, params) {
     const objtype = _.lowerCase(obj.objectType);
 
     if (objtype === "box" || objtype === "cube") {
-      instance = new Objects.Box(worldState, obj.position, obj.dimensions, obj.id);
+      instance = new Objects.Box(worldState, obj.position, obj.dimensions, obj.rotation, obj.id);
     } else if (objtype === "sphere" || objtype === 'ball') {
-      instance = new Objects.Sphere(worldState, obj.position, obj.dimensions, obj.id);
+      instance = new Objects.Sphere(worldState, obj.position, obj.dimensions, obj.rotation, obj.id);
     } else {
       console.debug(`Encountered an object type I didn't recognize: ${objtype}`)
     }
