@@ -104,9 +104,9 @@ export function add_objects (worldState, params) {
     const objtype = _.lowerCase(obj.objectType);
 
     if (objtype === "box" || objtype === "cube") {
-      instance = new Objects.Box(worldState, obj.position, obj.dimensions);
+      instance = new Objects.Box(worldState, obj.position, obj.dimensions, obj.id);
     } else if (objtype === "sphere" || objtype === 'ball') {
-      instance = new Objects.Sphere(worldState, obj.position, obj.dimensions);
+      instance = new Objects.Sphere(worldState, obj.position, obj.dimensions, obj.id);
     } else {
       console.debug(`Encountered an object type I didn't recognize: ${objtype}`)
     }

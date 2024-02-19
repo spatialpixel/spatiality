@@ -23,8 +23,8 @@ const defaultRotation = {
 };
 
 class RigidObject {
-  constructor (worldState, startPosition, dimensions, startRotation) {
-    this.id = uuidv4();
+  constructor (worldState, startPosition, dimensions, startRotation, id) {
+    this.id = id || uuidv4();
 
     // TODO: Fix up this referential weirdness.
     this.worldState = worldState;
@@ -129,8 +129,8 @@ class RigidObject {
 }
 
 export class Box extends RigidObject {
-  constructor (worldState, startPosition, dimensions, startRotation) {
-    super(worldState, startPosition, dimensions, startRotation);
+  constructor (worldState, startPosition, dimensions, startRotation, id) {
+    super(worldState, startPosition, dimensions, startRotation, id);
     
     this.objectTypeName = "Box";
 
@@ -144,8 +144,8 @@ export class Box extends RigidObject {
 }
 
 export class Sphere extends RigidObject{
-  constructor (worldState, startPosition, dimensions, startRotation) {
-    super(worldState, startPosition, dimensions, startRotation);
+  constructor (worldState, startPosition, dimensions, startRotation, id) {
+    super(worldState, startPosition, dimensions, startRotation, id);
     
     this.objectTypeName = "Sphere";
     
