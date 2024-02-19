@@ -58,6 +58,7 @@ const sketch = p => {
     drawAxes: true,
     colorScheme: lightModeColors,
     cam: null,
+    showLidar: false,
   };
 
   p.setup = async function () {

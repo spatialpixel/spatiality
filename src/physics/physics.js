@@ -107,6 +107,10 @@ export class PhysicsSimulation extends Simulation {
     Interface.initializeButton('#remove-selected', () => {
       this.worldState.removeSelected();
     });
+    
+    Interface.initializeCheckbox('#toggle-lidar', (value, event) => {
+      interfaceState.showLidar = !interfaceState.showLidar;
+    });
   }
   
   reset () {
@@ -126,7 +130,7 @@ export class PhysicsSimulation extends Simulation {
       obj.draw(p, interfaceState);
     }
 
-    if (this.lidar) {    
+    if (this.lidar && interfaceState.showLidar) {
       this.lidar.draw(p, interfaceState);
     }
   }
