@@ -8,10 +8,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
 export class Project {
-  constructor (chat, simulation) {
-    this.name = "New Project";
-    
-    this.id = uuidv4();
+  constructor (chat, simulation, id, name) {
+    this.id = id || uuidv4();
+    this.name = name || "New Project";
     
     this.chat = chat;
     this.simulation = simulation;
@@ -22,12 +21,17 @@ export class Project {
     await this.chat.initialize(this.simulation.defaultContext);
   }
   
-  restore () {
-    this.chat.restore();
-    this.simulation.restore();
-  }
-  
   reset () {
     
+  }
+  
+  get json () {
+    return {
+      type: 'Project',
+      id: this.id,
+      name: this.name,
+      chat: this.chat.json,
+      simulation: this.simulation.json,
+    }
   }
 }

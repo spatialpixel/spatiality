@@ -19,6 +19,13 @@ export class LidarAgent extends Agent {
     this.lidarPosition = { x: 1.0, y: 1.5, z: 3.0 };
   }
   
+  get json () {
+    return {
+      type: 'LidarAgent',
+      lidarPosition: this.lidarPosition,
+    }
+  }
+  
   async initialize () {
     Interface.initializeButton('#cast-rays', event => {
       this.castRays();

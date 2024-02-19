@@ -27,9 +27,9 @@
             <a href="/" id="name">Spatiality</a></h1>
           → <dropdown-menu class="dropdown-big">
               <span slot="button-text">Projects</span>
-              No projects yet.
+              <projects-list></projects-list>
             </dropdown-menu>
-          → New Project
+          → <input type="text" id="project-name-input" />
         </div>
         
         <div class="nav-section right">
@@ -56,7 +56,7 @@
               <a href="https://platform.openai.com/" target="_blank">here</a>.
               Soon, this will leverage other hosted AI services with the same API.</p>
             <p>The project is currently built by 
-              <a href="https://awmartin.xyz" target="_blank">Wiliam Martin</a> at 
+              <a href="https://awmartin.xyz" target="_blank">William Martin</a> at 
               <a href="https://spatialpixel.com" target="_blank">Spatial Pixel</a>.
               The code is found <a href="https://github.com/spatialpixel/spatiality" target="_blank">here
               on GitHub</a>.</p>
@@ -114,6 +114,42 @@
     </main>
 
     <script type="module" src="/main.js"></script>
+    
+    <template id="projects-list-template">
+      <style>
+        :host {
+          --primary-color: #eac451;
+          --primary-color-lightened: #f4e1a8;
+        }
+        
+        button {
+          font-size: 1.2rem;
+          border: none;
+          display: block;
+          background-color: white;
+          padding: 4px;
+          width: 100%;
+          text-align: left;
+          border: none !important;
+        }
+        button:hover {
+          background-color: var(--primary-color-lightened);
+        }
+        button:active {
+          background-color: var(--primary-color);
+        }
+        ul {
+          list-style-type: none;
+          padding: 0;
+          margin: 0;
+          text-indent: 0;
+          font-size: 1.0rem;
+        }
+      </style>
+      
+      <div class="projects">
+      </div>
+    </template>
     
     <template id="dropdown-menu-template">
       <style>
@@ -202,13 +238,13 @@
         }
       </style>
       <div class="dropdown">
-          <button class="dropdown-toggle">
-            <slot name="button-text">Toggle</slot>
-          </button>
-          
-          <div class="dropdown-content">
-              <slot></slot>
-          </div>
+        <button class="dropdown-toggle">
+          <slot name="button-text">Toggle</slot>
+        </button>
+        
+        <div class="dropdown-content">
+            <slot></slot>
+        </div>
       </div>
     </template> <!-- end dropdown-menu-template -->
 

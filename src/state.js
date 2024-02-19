@@ -11,6 +11,13 @@ export class State {
     this.currentProject = null;
 
     this.projects = [];
+    for (let i = 0; i < localStorage.length; i ++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      if (value.type === 'Project') {
+        this.projects.push(value);
+      }
+    }
   }
 
   get currentChat () {
@@ -36,5 +43,9 @@ export class State {
   
   reset () {
     this.currentProject.reset();
+  }
+  
+  openProject (project) {
+    
   }
 }

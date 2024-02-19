@@ -21,11 +21,15 @@ import * as OpenAI from '../openai.js';
 import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
 import _ from 'lodash';
 
+export function restoreSimulation (json) {
+  const worldState = restoreWorldState(json);
+  return new PhysicsSimulation(worldState);
+}
 
 export class PhysicsSimulation extends Simulation {
-  constructor () {
+  constructor (worldState=null) {
     super();
-    this.worldState = null;
+    this.worldState = worldState;
     this.lidar = null;
   }
   
@@ -58,7 +62,9 @@ export class PhysicsSimulation extends Simulation {
   async initialize (interfaceState) {
     await RAPIER.init();
 
-    this.worldState = new WorldState(RAPIER);
+    if (!this.worldState) {
+      this.worldState = new WorldState();
+    }
     this.worldState.addGroundPlane();
 
     this.lidar = new Lidar.LidarAgent(this.worldState);
@@ -180,19 +186,32 @@ export class PhysicsSimulation extends Simulation {
       return instance;
     }
   }
+  
+  get json () {
+    return this.worldState.json
+  }
+}
+
+export function restoreWorldState (json) {
+  return new WorldState(json.gravity, json.objects);
 }
 
 class WorldState {
-  constructor (r) {
-    // Hold a reference for convenience.
-    this.RAPIER = r;
-
-    const gravity = { x: 0.0, y: -9.81, z: 0.0 };
-    this.world = new RAPIER.World(gravity);
+  constructor (gravity=null, objects=null) {
+    this.gravity = { x: 0.0, y: -9.81, z: 0.0 } || gravity;
+    this.world = new RAPIER.World(this.gravity);
     
-    this.objects = [];
+    this.objects = [] || objects;
     
     this.selected = [];
+  }
+  
+  get json () {
+    return {
+      type: 'PhysicsSimulation',
+      objects: this.objects.map(obj => obj.json),
+      gravity: this.gravity,
+    }
   }
   
   selectObject (instance) {

@@ -31,6 +31,20 @@ export function initializeCheckbox (elementId, handler) {
   }
 }
 
+export function initializeTextInput (elementId, handler, defaultValueGetter) {
+  const element = document.querySelector(elementId);
+  if (element) {
+    element.addEventListener('change', event => {
+      handler(element.value, event);
+    });
+    
+    if (defaultValueGetter) {
+      const defaultValue = defaultValueGetter();
+      element.value = defaultValue;
+    }
+  }
+}
+
 export function drawAxes (p, size=1) {
   p.strokeWeight(1);
   p.stroke(p.color('red'));

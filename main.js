@@ -7,6 +7,7 @@
 
 import './style.css';
 import './src/dropdown-menu.js';
+import './src/projects-list.js';
 
 import * as Interface from './src/interface.js';
 import * as Helpers from './src/helpers.js';
@@ -20,6 +21,7 @@ import * as Physics from './src/physics/physics.js';
 
 // The hosted LLM AI we want to use.
 import * as OpenAI from './src/openai.js';
+import { Chat } from './src/chat.js';
 
 // The global State singleton.
 let state
@@ -71,10 +73,18 @@ const sketch = p => {
     const newSim = new Physics.PhysicsSimulation();
     
     // Instantiate a Chat object, but pass in the default context.
-    const newChat = new OpenAI.Chat();
+    const newChat = new Chat();
 
     // Create a project from the chat and simulation.
     state.currentProject = new Project.Project(newChat, newSim);
+    
+    Interface.initializeTextInput('#project-name-input', (value, event) => {
+        state.currentProject.name = value;
+        const projectsList = document.querySelector('projects-list');
+        projectsList.updateProjectName(state.currentProject.id, state.currentProject.name);
+      },
+      () => state.currentProject.name
+    );
     
     // Create the LLM context.
     state.openai = new OpenAI.OpenAIInterface(state, addMessageToList);
@@ -87,6 +97,15 @@ const sketch = p => {
     // Disable right click for the benefit of EasyCam.
     const sim = document.querySelector('#simulation');
     sim.oncontextmenu = function() { return false; };
+    
+    // Populate the projects list.
+    state.projects.push(state.currentProject.json);
+    const projectsList = document.querySelector('projects-list');
+    if (projectsList) {
+      projectsList.populate(state);
+    } else {
+      console.error('Could not find the projects-list element.');
+    }
   } // end setup
   
   p.draw = function () {
@@ -118,6 +137,8 @@ const sketch = p => {
       Interface.drawAxes(p);
     }
   } // end draw
+  
+
   
   Interface.initializeCheckbox('#toggle-axes', (value, event) => {
     interfaceState.drawAxes = value;

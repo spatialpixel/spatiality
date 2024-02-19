@@ -419,6 +419,16 @@ nav h1 {
   margin: 0;
 }
 
+input#project-name-input {
+  font-size: var(--nav-font-size);
+  margin: 0;
+  padding: 4px 6px;
+  border: none;
+}
+input#project-name-input:hover {
+  background-color: var(--primary-color-lightened);
+}
+
 article {
   max-width: 800px;
   margin-top: 1rem;

@@ -6,35 +6,8 @@
  */
 
 import * as Interface from './interface.js';
-
+import { Chat } from './chat.js';
 import OpenAI from 'openai';
-import { v4 as uuidv4 } from 'uuid';
-
-
-export class Chat {
-  constructor () {
-    this.id = uuidv4();
-    this.model = "gpt-4-1106-preview";
-    this.messages = null;
-  }
-  
-  addMessage (message) {
-    this.messages.push(message);
-  }
-  
-  initialize (defaultContext) {
-    this.messages = [
-      {
-        "role": "system",
-        "content": defaultContext
-      },
-    ];
-  }
-  
-  restore () {
-    
-  }
-}
 
 const API_STORAGE_KEY = 'spatiality-openai-api-key';
 
