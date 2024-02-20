@@ -76,7 +76,7 @@ export class LidarAgent extends Agent {
         z: Math.cos(phi)
       };
   
-      const ray = new this.worldState.RAPIER.Ray(this.lidarPosition, vector);
+      const ray = new window.RAPIER.Ray(this.lidarPosition, vector);
       const maxToi = 10.0;
       const solid = true;
       

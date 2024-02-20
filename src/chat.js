@@ -29,6 +29,10 @@ export class Chat {
     }
   }
   
+  reset () {
+    // Intentionally empty for now.
+  }
+  
   get json () {
     return {
       type: 'Chat',

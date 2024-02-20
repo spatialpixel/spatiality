@@ -21,9 +21,12 @@ import * as OpenAI from '../openai.js';
 import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
 import _ from 'lodash';
 
+// window.RAPIER = RAPIER;
+
 export function restoreSimulation (json) {
   const worldState = restoreWorldState(json);
-  return new PhysicsSimulation(worldState);
+  const simulation = new PhysicsSimulation(worldState);
+  return simulation;
 }
 
 export class PhysicsSimulation extends Simulation {
@@ -31,6 +34,11 @@ export class PhysicsSimulation extends Simulation {
     super();
     this.worldState = worldState;
     this.lidar = null;
+  }
+  
+  restore (json) {
+    // Temporary measure to keep the same simulation instance.
+    this.worldState.restore(json.worldState);
   }
   
   get defaultContext () {
@@ -60,16 +68,21 @@ export class PhysicsSimulation extends Simulation {
   }
   
   async initialize (interfaceState) {
-    await RAPIER.init();
+    console.debug('initialize')
+    const firstInitialization = !this.worldState;
 
-    if (!this.worldState) {
-      this.worldState = new WorldState();
+    if (firstInitialization) {
+      await RAPIER.init();
+      this.worldState = new WorldState(RAPIER);
+      this.worldState.addGroundPlane();
+      this.initializeUI(interfaceState);
     }
-    this.worldState.addGroundPlane();
 
     this.lidar = new Lidar.LidarAgent(this.worldState);
     await this.lidar.initialize();
-    
+  }
+  
+  initializeUI (interfaceState) {
     Interface.initializeButton('#reset-physics', () => {
       this.reset();
     });
@@ -79,8 +92,6 @@ export class PhysicsSimulation extends Simulation {
     });
     
     Interface.initializeButton('#objects-add-cube', () => {
-      console.log('add cube');
-      
       const x = 0 + Math.random() * 4 - 2;
       const y = 10.0 + Math.random() * 4 - 2; // vertical axis
       const z = 0 + Math.random() * 4 - 2;
@@ -90,6 +101,8 @@ export class PhysicsSimulation extends Simulation {
         rotation: { x: 0, y: 0, z: 0, w: 0 },
         dimensions: { length: 1, width: 1, height: 1}
       };
+      
+      console.log('add cube:', cubeParams);
 
       this.availableFunctions.add_objects({ objects: [cubeParams] });
     });
@@ -188,18 +201,24 @@ export class PhysicsSimulation extends Simulation {
   }
   
   get json () {
-    return this.worldState.json
+    return {
+      worldState: this.worldState.json,
+    }
   }
 }
 
 export function restoreWorldState (json) {
-  return new WorldState(json.gravity, json.objects);
+  const worldState = new WorldState(json.gravity);
+  const objects = _.map(json.objects, objJson => AddObjectsFunction.parseObject(worldState, objJson));
+  return _.compact(objects);
 }
 
 class WorldState {
-  constructor (gravity=null, objects=null) {
+  constructor (r, gravity=null, objects=null) {
+    console.debug('WorldState.constructor')
+    this.RAPIER = r;
     this.gravity = { x: 0.0, y: -9.81, z: 0.0 } || gravity;
-    this.world = new RAPIER.World(this.gravity);
+    this.world = new this.RAPIER.World(this.gravity);
     
     this.objects = [] || objects;
     
@@ -248,7 +267,7 @@ class WorldState {
   
   addGroundPlane () {
     // Create the ground
-    let groundColliderDesc = RAPIER.ColliderDesc.cuboid(10.0, 0.1, 10.0).setTranslation(0, -0.1, 0);
+    const groundColliderDesc = this.RAPIER.ColliderDesc.cuboid(10.0, 0.1, 10.0).setTranslation(0, -0.1, 0);
     this.world.createCollider(groundColliderDesc);
   }
   
@@ -288,9 +307,17 @@ class WorldState {
     this.world.free();
     
     const gravity = { x: 0.0, y: -9.81, z: 0.0 };
-    this.world = new RAPIER.World(gravity);
+    this.world = new this.RAPIER.World(gravity);
     
-    let groundColliderDesc = RAPIER.ColliderDesc.cuboid(10.0, 0.1, 10.0);
-    this.world.createCollider(groundColliderDesc);
+    this.addGroundPlane();
+  }
+  
+  restore (json) {
+    this.world = new this.RAPIER.World(json.gravity);
+    
+    this.addGroundPlane();
+    
+    const parsedObjects = _.map(json.objects, objJson => AddObjectsFunction.parseObject(this, objJson));
+    this.objects = _.compact(parsedObjects);
   }
 }

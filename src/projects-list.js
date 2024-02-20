@@ -23,6 +23,11 @@ class ProjectsList extends HTMLElement {
       
       item.addEventListener('click', event => {
         console.log(`Opening project ${project.name} ${project.id}`);
+        
+        state.openProject(project.id, projectObj => {
+          const projectNameInput = document.getElementById('project-name-input');
+          projectNameInput.value = projectObj.name;
+        });
       });
 
       list.appendChild(item);

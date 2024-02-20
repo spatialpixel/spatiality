@@ -28,7 +28,6 @@ class RigidObject {
 
     // TODO: Fix up this referential weirdness.
     this.worldState = worldState;
-    this.RAPIER = worldState.RAPIER;
     this.world = worldState.world;
     
     this.alive = true;
@@ -37,7 +36,7 @@ class RigidObject {
 
     this.dimensions = dimensions || _.clone(defaultDimensions);
 
-    let rigidBodyDesc = this.RAPIER.RigidBodyDesc.dynamic()
+    const rigidBodyDesc = worldState.RAPIER.RigidBodyDesc.dynamic()
                           .setTranslation(startPosition.x, startPosition.y, startPosition.z)
                           .setRotation(this.startRotation);
     this.rigidBody = this.world.createRigidBody(rigidBodyDesc);
@@ -112,7 +111,6 @@ class RigidObject {
   destroy () {
     this.alive = false;
     this.world = null;
-    this.RAPIER = null;
     
     this.worldState.removeObject(this);
   }
@@ -120,7 +118,8 @@ class RigidObject {
   get json () {
     return {
       id: this.id,
-      type: this.objectTypeName,
+      type: 'Object',
+      objectType: this.objectTypeName,
       position: this.rigidBody.translation(),
       rotation: this.rigidBody.rotation(),
       dimensions: this.dimensions,
@@ -133,8 +132,11 @@ export class Box extends RigidObject {
     super(worldState, startPosition, dimensions, startRotation, id);
     
     this.objectTypeName = "Box";
+    const len = this.dimensions.length / 2.0,
+      wid = this.dimensions.width / 2.0,
+      hei = this.dimensions.height / 2.0;
 
-    let colliderDesc = this.RAPIER.ColliderDesc.cuboid(this.dimensions.length / 2.0, this.dimensions.height / 2.0, this.dimensions.width / 2.0);
+    let colliderDesc = worldState.RAPIER.ColliderDesc.cuboid(len, hei, wid);
     this.collider = this.world.createCollider(colliderDesc, this.rigidBody);
   }
   
@@ -148,10 +150,13 @@ export class Sphere extends RigidObject{
     super(worldState, startPosition, dimensions, startRotation, id);
     
     this.objectTypeName = "Sphere";
+    const len = this.dimensions.length / 2.0,
+      wid = this.dimensions.width / 2.0,
+      hei = this.dimensions.height / 2.0;
     
-    const radius = (this.dimensions.diameter / 2.0) || this.dimensions.radius || (this.dimensions.length / 2.0) || (this.dimensions.width / 2.0) || (this.dimensions.height / 2.0);
+    const radius = (this.dimensions.diameter / 2.0) || this.dimensions.radius || len || wid || hei;
   
-    let colliderDesc = this.RAPIER.ColliderDesc.ball(radius);
+    let colliderDesc = worldState.RAPIER.ColliderDesc.ball(radius);
     this.collider = this.world.createCollider(colliderDesc, this.rigidBody);
   }
   

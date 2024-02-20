@@ -97,24 +97,28 @@ export const schema = {
   }
 };
 
+export function parseObject (worldState, obj) {
+  const objtype = _.lowerCase(obj.objectType);
+
+  if (objtype === "box" || objtype === "cube") {
+    return new Objects.Box(worldState, obj.position, obj.dimensions, obj.rotation, obj.id);
+  } else if (objtype === "sphere" || objtype === 'ball') {
+    return new Objects.Sphere(worldState, obj.position, obj.dimensions, obj.rotation, obj.id);
+  } else {
+    return null
+  }
+}
+
 export function add_objects (worldState, params) {
   const tr = [];
 
   for (const obj of params.objects) {
-    let instance
-    const objtype = _.lowerCase(obj.objectType);
-
-    if (objtype === "box" || objtype === "cube") {
-      instance = new Objects.Box(worldState, obj.position, obj.dimensions, obj.rotation, obj.id);
-    } else if (objtype === "sphere" || objtype === 'ball') {
-      instance = new Objects.Sphere(worldState, obj.position, obj.dimensions, obj.rotation, obj.id);
-    } else {
-      console.debug(`Encountered an object type I didn't recognize: ${objtype}`)
-    }
-
+    const instance = parseObject(worldState, obj);
     if (instance) {
       worldState.addObject(instance);
       tr.push(instance.json);
+    } else {
+      console.debug(`Encountered an object type I didn't recognize: ${objtype}`)
     }
   }
 

@@ -4,6 +4,9 @@
  * @author William Martin
  * @version 0.1.0
  */
+ 
+import { restoreProject } from './project-restore.js';
+import _ from 'lodash';
 
 export class State {
   constructor () {
@@ -11,13 +14,24 @@ export class State {
     this.currentProject = null;
 
     this.projects = [];
+
     for (let i = 0; i < localStorage.length; i ++) {
       const key = localStorage.key(i);
       const value = localStorage.getItem(key);
-      if (value.type === 'Project') {
-        this.projects.push(value);
+      try {
+        const json = JSON.parse(value);
+        if (json.type === 'Project') {
+          this.projects.push(json);
+        }
+      } catch (err) {
+        // We may have values that don't parse.
+        // Just ignore them for now.
       }
     }
+  }
+  
+  get numProjects () {
+    return this.projects.length;
   }
 
   get currentChat () {
@@ -45,7 +59,33 @@ export class State {
     this.currentProject.reset();
   }
   
-  openProject (project) {
+  getProjectById (id) {
+    return _.find(this.projects, proj => proj.id === id);
+  }
+  
+  openProject (id, callback) {
+    this.saveCurrentProject();
     
+    this.currentProject.reset();
+    
+    const projectJson = this.getProjectById(id);
+    if (projectJson) {
+      // For now, hold onto the current simulation.
+      // TODO Ensure simulations have a clean initialization and deallocation.
+      const projectObj = restoreProject(projectJson, this.currentSimulation);
+      this.currentProject = projectObj;
+      if (callback) {
+        callback(projectObj);
+      }
+    } else {
+      console.warn(`Tried to open project with id ${id} but couldn't find it.`)
+    }
+  }
+  
+  saveCurrentProject () {
+    const id = this.currentProject.id;
+    const json = this.currentProject.json;
+    const str = JSON.stringify(json);
+    localStorage.setItem(id, str);
   }
 }

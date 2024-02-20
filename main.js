@@ -76,12 +76,18 @@ const sketch = p => {
     const newChat = new Chat();
 
     // Create a project from the chat and simulation.
-    state.currentProject = new Project.Project(newChat, newSim);
+    state.currentProject = new Project.Project(newChat, newSim, `New Project ${state.numProjects + 1}`);
     
     Interface.initializeTextInput('#project-name-input', (value, event) => {
+        const oldName = state.currentProject.name;
         state.currentProject.name = value;
+
+        // TODO Create CustomEvents for things like this in the future that affect
+        // potentially multiple components.
         const projectsList = document.querySelector('projects-list');
         projectsList.updateProjectName(state.currentProject.id, state.currentProject.name);
+        
+        state.saveCurrentProject();
       },
       () => state.currentProject.name
     );
