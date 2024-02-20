@@ -21,7 +21,7 @@ import * as OpenAI from '../openai.js';
 import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
 import _ from 'lodash';
 
-// window.RAPIER = RAPIER;
+window.RAPIER = RAPIER;
 
 export function restoreSimulation (json) {
   const worldState = restoreWorldState(json);
@@ -73,7 +73,7 @@ export class PhysicsSimulation extends Simulation {
 
     if (firstInitialization) {
       await RAPIER.init();
-      this.worldState = new WorldState(RAPIER);
+      this.worldState = new WorldState();
       this.worldState.addGroundPlane();
       this.initializeUI(interfaceState);
     }
@@ -168,7 +168,7 @@ export class PhysicsSimulation extends Simulation {
   }
   
   getObjectsIntersectingRay (origin, direction) {
-    const ray = new this.worldState.RAPIER.Ray(origin, direction);
+    const ray = new window.RAPIER.Ray(origin, direction);
     const maxToi = 100.0;
     const solid = true;
     
@@ -214,11 +214,9 @@ export function restoreWorldState (json) {
 }
 
 class WorldState {
-  constructor (r, gravity=null, objects=null) {
-    console.debug('WorldState.constructor')
-    this.RAPIER = r;
+  constructor (gravity=null, objects=null) {
     this.gravity = { x: 0.0, y: -9.81, z: 0.0 } || gravity;
-    this.world = new this.RAPIER.World(this.gravity);
+    this.world = new window.RAPIER.World(this.gravity);
     
     this.objects = [] || objects;
     
@@ -267,7 +265,7 @@ class WorldState {
   
   addGroundPlane () {
     // Create the ground
-    const groundColliderDesc = this.RAPIER.ColliderDesc.cuboid(10.0, 0.1, 10.0).setTranslation(0, -0.1, 0);
+    const groundColliderDesc = window.RAPIER.ColliderDesc.cuboid(10.0, 0.1, 10.0).setTranslation(0, -0.1, 0);
     this.world.createCollider(groundColliderDesc);
   }
   
@@ -307,13 +305,13 @@ class WorldState {
     this.world.free();
     
     const gravity = { x: 0.0, y: -9.81, z: 0.0 };
-    this.world = new this.RAPIER.World(gravity);
+    this.world = new window.RAPIER.World(gravity);
     
     this.addGroundPlane();
   }
   
   restore (json) {
-    this.world = new this.RAPIER.World(json.gravity);
+    this.world = new window.RAPIER.World(json.gravity);
     
     this.addGroundPlane();
     

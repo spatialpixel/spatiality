@@ -36,7 +36,7 @@ class RigidObject {
 
     this.dimensions = dimensions || _.clone(defaultDimensions);
 
-    const rigidBodyDesc = worldState.RAPIER.RigidBodyDesc.dynamic()
+    const rigidBodyDesc = window.RAPIER.RigidBodyDesc.dynamic()
                           .setTranslation(startPosition.x, startPosition.y, startPosition.z)
                           .setRotation(this.startRotation);
     this.rigidBody = this.world.createRigidBody(rigidBodyDesc);
@@ -136,7 +136,7 @@ export class Box extends RigidObject {
       wid = this.dimensions.width / 2.0,
       hei = this.dimensions.height / 2.0;
 
-    let colliderDesc = worldState.RAPIER.ColliderDesc.cuboid(len, hei, wid);
+    let colliderDesc = window.RAPIER.ColliderDesc.cuboid(len, hei, wid);
     this.collider = this.world.createCollider(colliderDesc, this.rigidBody);
   }
   
@@ -156,7 +156,7 @@ export class Sphere extends RigidObject{
     
     const radius = (this.dimensions.diameter / 2.0) || this.dimensions.radius || len || wid || hei;
   
-    let colliderDesc = worldState.RAPIER.ColliderDesc.ball(radius);
+    let colliderDesc = window.RAPIER.ColliderDesc.ball(radius);
     this.collider = this.world.createCollider(colliderDesc, this.rigidBody);
   }
   
