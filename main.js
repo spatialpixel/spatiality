@@ -11,7 +11,6 @@ import './src/projects-list.js';
 
 import * as Interface from './src/interface.js';
 import * as Helpers from './src/helpers.js';
-import * as Messages from './src/messages-list.js';
 
 // The global state object. Instantiated as a singleton.
 import { State } from './src/state.js';
@@ -48,31 +47,21 @@ const sketch = p => {
     drawAxes: true,
     colorScheme: lightModeColors,
     cam: null,
-
-    // TODO Move these to the PhysicsSimulation state.
-    animatePhysics: true,
-    showLidar: false,
   };
 
   p.setup = async function () {
     const canvasSize = getCanvasSize();
     p.createCanvas(canvasSize.width, canvasSize.height, p.WEBGL);
+    
+    initializeCamera();
+    
+    // Create the LLM context.
+    const openai = new OpenAI.OpenAIInterface();
 
     // Create the global state singleton, which also creates the default Project,
     // populates the project list, and manages the list of Projects.
-    state = new State();
-    
-    // Create the LLM context.
-    state.openai = new OpenAI.OpenAIInterface(state, Messages.addMessageToList);
-
-    // Initialize everything.
+    state = new State(openai);
     await state.initialize(interfaceState);
-
-    interfaceState.cam = p.createEasyCam({ rotation: [ 0, 0, 0.4794255, 0.8775826 ] });
-
-    // Disable right click for the benefit of EasyCam.
-    const sim = document.querySelector('#simulation');
-    sim.oncontextmenu = function() { return false; };
   } // end setup
   
   p.draw = function () {
@@ -98,14 +87,22 @@ const sketch = p => {
     p.box(20.0, 0.2, 20.0);
     p.pop();
     
-    state.currentSimulation.draw(p, interfaceState);
+    if (state.currentSimulation) {
+      state.currentSimulation.draw(p, interfaceState);
+    }
     
     if (interfaceState.drawAxes) {
       Interface.drawAxes(p);
     }
   } // end draw
   
-
+  function initializeCamera () {
+    interfaceState.cam = p.createEasyCam({ rotation: [ 0, 0, 0.4794255, 0.8775826 ] });
+    
+    // Disable right click for the benefit of EasyCam.
+    const sim = document.querySelector('#simulation');
+    sim.oncontextmenu = function() { return false; };
+  }
   
   Interface.initializeCheckbox('#toggle-axes', (value, event) => {
     interfaceState.drawAxes = value;

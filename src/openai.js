@@ -8,23 +8,23 @@
 import * as Interface from './interface.js';
 import { Chat } from './chat.js';
 import OpenAI from 'openai';
+import * as Messages from './messages-list.js';
 
 const API_STORAGE_KEY = 'spatiality-openai-api-key';
 
 export class OpenAIInterface {
-  constructor (state, addMessageToList) {
-    this.state = state;
-    this.addMessageToList = addMessageToList;
-
+  constructor () {
+    this.state = null;
     this._openai = null;
   }
   
-  async initialize () {
-    this.initializeUIBehaviors();
+  async initialize (state, interfaceState) {
+    this.state = state;
+    this.initializeUIBehaviors(interfaceState);
   }
   
   // =============================================================================
-  // UI Stuff - TODO: Consider moving to its own class.
+  // UI Stuff - TODO: Consider moving to its own module.
   
   initializeUIBehaviors () {
     this.addStorageBehaviorToApiKeyInput();
@@ -69,38 +69,34 @@ export class OpenAIInterface {
     toggleButton.addEventListener('click', togglePasswordVisibility);
   }
   
-  initializePromptInputs () {
+  initializePromptInputs (interfaceState) {
     const promptInput = document.getElementById('prompt-input');
     
-    if (promptInput) {
-      promptInput.addEventListener('keydown', async event => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          promptInput.disabled = true;
+    if (!promptInput) {
+      throw new Error(`Couldn't find the prompt input!`);
+    }
     
-          // Get the text from the text input element.
-          const prompt = promptInput.value;
-          
-          // Call the OpenAI API to get a completion from the prompt.
-          const completion = await this.chat(prompt);
-    
-          promptInput.value = '';
-          promptInput.disabled = false;
-        } // end check for Enter
-      }); // end addEventListener click
-    } // end check for promptInput existence
-    
-    Interface.initializeButton("#send-prompt", async event => {
+    const submit = async () => {
+      promptInput.disabled = true;
+      
       // Get the text from the text input element.
       const prompt = promptInput.value;
-      promptInput.disabled = true;
       
       // Call the OpenAI API to get a completion from the prompt.
       const completion = await this.chat(prompt);
       
       promptInput.value = '';
       promptInput.disabled = false;
+    };
+    
+    promptInput.addEventListener('keydown', async event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        await submit();
+      }
     });
+    
+    Interface.initializeButton("#send-prompt", submit.bind(this));
   }
   
   // =============================================================================
@@ -129,9 +125,7 @@ export class OpenAIInterface {
 
     this._openai = new OpenAI({
       apiKey: this.apiKey,
-    
-      // This is ONLY for prototyping locally on your personal machine!
-      dangerouslyAllowBrowser: true
+      dangerouslyAllowBrowser: true, // HACK
     });
 
     return true;
@@ -146,6 +140,10 @@ export class OpenAIInterface {
   // TODO: there's probably a better way to handle UI updates, but some responses
   // we want to show but aren't actually messages of the chat itself.
   async chat (prompt) {
+    const chat = this.state.currentChat;
+    const toolSchemas = this.state.currentSimulation.toolSchemas;
+    const availableFunctions = this.state.currentSimulation.availableFunctions;
+    
     try {
       console.log(`Attempting to chat via OpenAI API with prompt:`, prompt);
       if (!this._openai) {
@@ -157,13 +155,13 @@ export class OpenAIInterface {
         "role": "user",
         "content": prompt
       };
-      this.addMessageToList(prompt);
+      Messages.addMessageToList(prompt);
       
       if (!this._openai) {
         throw new Error("Tried to chat with OpenAI but the OpenAI instance wasn't ready. Perhaps a missing API key?");
       }
       
-      const chat = this.state.currentChat;
+      
       
       // Now that the OpenAI instance has been instantiated, add the prompt
       // to the list of messages. This ensures the chat's continuity.
@@ -172,7 +170,7 @@ export class OpenAIInterface {
       const completion = await this._openai.chat.completions.create({
         model: chat.model,
         messages: chat.messages,
-        tools: this.state.toolSchemas,
+        tools: toolSchemas,
       });
       
       // I think regardless, we want to store the first response.
@@ -183,7 +181,7 @@ export class OpenAIInterface {
       if (responseMessage.tool_calls) {
         const tool_names = responseMessage.tool_calls.map(t => t.function.name).join(', ');
 
-        this.addMessageToList('··· ' + (responseContent || `Response requires calling function(s): ${tool_names}`));
+        Messages.addMessageToList('··· ' + (responseContent || `Response requires calling function(s): ${tool_names}`));
         
         // In this case, the response has asked to call one or more tools to get enough information
         // to complete the chat.
@@ -191,9 +189,9 @@ export class OpenAIInterface {
         for (const tool_call of responseMessage.tool_calls) {
           const function_name = tool_call.function.name;
   
-          this.addMessageToList(`··· Calling function ${function_name}:`);
+          Messages.addMessageToList(`··· Calling function ${function_name}:`);
           
-          const function_to_call = this.state.availableFunctions[function_name];
+          const function_to_call = availableFunctions[function_name];
           const function_args = JSON.parse(tool_call.function.arguments);
   
           console.log('··· Calling function:', function_name, ', with the arguments:', function_args);
@@ -224,13 +222,13 @@ export class OpenAIInterface {
         chat.addMessage(secondResponseMessage);
   
         const secondResponseContent = secondResponseMessage.content;
-        this.addMessageToList('→ ' + secondResponseContent);
+        Messages.addMessageToList('→ ' + secondResponseContent);
         return secondResponseContent;
       } else {
         // Normal path with no tool calls.
         const responseContent = completion.choices[0].message.content;
         
-        this.addMessageToList('→ ' + responseContent);
+        Messages.addMessageToList('→ ' + responseContent);
         return responseContent;
       }
     } catch (err) {

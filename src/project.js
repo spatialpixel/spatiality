@@ -14,6 +14,8 @@ export class Project {
     
     this.chat = chat;
     this.simulation = simulation;
+    
+    this.state = null;
   }
   
   async initialize (interfaceState) {

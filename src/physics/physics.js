@@ -36,6 +36,25 @@ export class PhysicsSimulation extends Simulation {
     this.lidar = null;
   }
   
+  async initialize (interfaceState) {
+    const firstInitialization = !this.worldState;
+  
+    if (firstInitialization) {
+      await RAPIER.init();
+      this.worldState = new WorldState();
+      this.worldState.addGroundPlane();
+      
+      interfaceState.physics = {
+        animatePhysics: true,
+        showLidar: false,
+      }
+      this.initializeUI(interfaceState);
+    }
+  
+    this.lidar = new Lidar.LidarAgent(this.worldState);
+    await this.lidar.initialize();
+  }
+  
   restore (json) {
     // Temporary measure to keep the same simulation instance.
     if (this.worldState) {
@@ -69,33 +88,20 @@ export class PhysicsSimulation extends Simulation {
     };
   }
   
-  async initialize (interfaceState) {
-    const firstInitialization = !this.worldState;
-
-    if (firstInitialization) {
-      await RAPIER.init();
-      this.worldState = new WorldState();
-      this.worldState.addGroundPlane();
-      this.initializeUI(interfaceState);
-    }
-
-    this.lidar = new Lidar.LidarAgent(this.worldState);
-    await this.lidar.initialize();
-  }
-  
   initializeUI (interfaceState) {
     Interface.initializeButton('#reset-physics', () => {
       this.reset();
     });
     
     Interface.initializeCheckbox('#toggle-physics', (value, event) => {
-      interfaceState.animatePhysics = value;
+      interfaceState.physics.animatePhysics = value;
     });
     
     Interface.initializeButton('#objects-add-cube', () => {
       const x = 0 + Math.random() * 4 - 2;
       const y = 10.0 + Math.random() * 4 - 2; // vertical axis
       const z = 0 + Math.random() * 4 - 2;
+
       const cubeParams = {
         objectType: 'cube',
         position: { x, y, z },
@@ -103,25 +109,26 @@ export class PhysicsSimulation extends Simulation {
         dimensions: { length: 1, width: 1, height: 1}
       };
       
-      console.log('add cube:', cubeParams);
+      console.log('Adding cube manually:', cubeParams);
 
       this.availableFunctions.add_objects({ objects: [cubeParams] });
     });
     
     Interface.initializeButton('#objects-add-sphere', () => {
-      console.log('add sphere');
-      
       const x = 0 + Math.random() * 4 - 2;
       const y = 10.0 + Math.random() * 4 - 2; // vertical axis
       const z = 0 + Math.random() * 4 - 2;
-      const cubeParams = {
+
+      const sphereParams = {
         objectType: 'sphere',
         position: { x, y, z },
         rotation: { x: 0, y: 0, z: 0, w: 1 },
         dimensions: { length: 1, width: 1, height: 1}
       };
+      
+      console.log('Adding sphere manually:', sphereParams);
 
-      this.availableFunctions.add_objects({ objects: [cubeParams] });
+      this.availableFunctions.add_objects({ objects: [sphereParams] });
     });
     
     Interface.initializeButton('#remove-selected', () => {
@@ -129,7 +136,7 @@ export class PhysicsSimulation extends Simulation {
     });
     
     Interface.initializeCheckbox('#toggle-lidar', (value, event) => {
-      interfaceState.showLidar = !interfaceState.showLidar;
+      interfaceState.physics.showLidar = !interfaceState.physics.showLidar;
     });
   }
   
@@ -142,7 +149,7 @@ export class PhysicsSimulation extends Simulation {
     if (!this.worldState) { return; }
     if (!this.worldState.world) { return; }
 
-    if (interfaceState.animatePhysics) {
+    if (interfaceState.physics.animatePhysics) {
       this.worldState.world.step();
     }
     
@@ -150,7 +157,7 @@ export class PhysicsSimulation extends Simulation {
       obj.draw(p, interfaceState);
     }
 
-    if (this.lidar && interfaceState.showLidar) {
+    if (this.lidar && interfaceState.physics.showLidar) {
       this.lidar.draw(p, interfaceState);
     }
   }

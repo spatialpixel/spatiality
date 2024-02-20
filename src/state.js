@@ -16,18 +16,27 @@ import { restoreProject } from './project-restore.js';
 import _ from 'lodash';
 
 export class State {
-  constructor () {
-    this.openai = null;
-    this.currentProject = null;
-
-    this.loadAllProjects();
-    this.populateProjectsList();
-
-    this.currentProject = this.createDefaultProject();
-    
-    this.initializeUI();
+  constructor (openai, project=null) {
+    this.openai = openai;
+    this.currentProject = project;
   }
   
+  async initialize (interfaceState) {
+    this.loadAllProjects();
+    this.populateProjectsList();
+    
+    if (!this.currentProject) {
+      this.currentProject = this.createDefaultProject();
+    }
+    
+    this.initializeUI(); // Depends on this.currentProject.
+
+    await this.openai.initialize(this, interfaceState);
+    await this.currentProject.initialize(interfaceState);
+    
+    this.addProject(this.currentProject.json);
+  }
+
   loadAllProjects () {
     this.projects = [];
 
@@ -64,23 +73,16 @@ export class State {
   }
   
   createDefaultProject () {
-    // Create the simulation frist.
+    // Create the simulation first.
     const newSim = new Physics.PhysicsSimulation();
     
-    // Instantiate a Chat object, but pass in the default context.
+    // Instantiate an empty Chat object.
     const newChat = new Chat();
     
     // Create a project from the chat and simulation.
     const defaultProjectName = `New Project ${this.numProjects + 1}`;
     const newProject = new Project.Project(newChat, newSim, defaultProjectName);
     return newProject;
-  }
-  
-  async initialize (interfaceState) {
-    await this.openai.initialize();
-    await this.currentProject.initialize(interfaceState);
-    
-    this.addProject(this.currentProject.json);
   }
   
   initializeUI () {
@@ -161,13 +163,5 @@ export class State {
   
   get currentSimulation () {
     return this.currentProject.simulation;
-  }
-  
-  get availableFunctions () {
-    return this.currentSimulation.availableFunctions;
-  }
-  
-  get toolSchemas () {
-    return this.currentSimulation.toolSchemas;
   }
 }
