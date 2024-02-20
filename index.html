@@ -168,11 +168,19 @@
           padding-bottom: 6px;
           margin-bottom: 10px;
         }
+        .spacer {
+          flex-grow: 2;
+        }
+        #delete-project {
+          border-color: darkred;
+        }
       </style>
       
       <div class="actions">
         <button class="action" id="new-project">New Project</button>
         <button class="action" id="save-project">Save Current Project</button>
+        <div class="spacer"></div>
+        <button class="action" id="delete-project">Delete Current Project</button>
       </div>
       <div class="projects">
       </div>

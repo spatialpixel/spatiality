@@ -101,19 +101,25 @@ export class State {
   
   // TODO Find an event-driven way to sync this.projects with the projects-list element.
   addProject (projectJson) {
-    const projectsList = document.querySelector('projects-list');
-    projectsList.addProject(projectJson);
+    // Add to the component list.
+    document.querySelector('projects-list').addProject(projectJson);
     
     // Add to projects list.
     this.projects.push(projectJson);
+    
+    // Save to local storage.
+    // localStorage.setItem(projectJson.id, projectJson);
   }
   
   removeProject (projectId) {
-    const projectsList = document.querySelector('projects-list');
-    projectsList.removeProject(projectId);
+    // Remove from the component list.
+    document.querySelector('projects-list').removeProject(projectId);
     
     // Remove the project from the projects list.
     _.remove(this.projects, project => project.id === projectId);
+    
+    // Also remove from localStorage.
+    localStorage.removeItem(projectId);
   }
   
   getProjectById (id) {
@@ -121,19 +127,11 @@ export class State {
   }
   
   createProject (callback) {
+    console.log('Creating a new project');
     this.openProject(null, callback);
   }
   
   openProject (id, callback) {
-    if (this.currentProject.hasChanged) {
-      this.saveCurrentProject();
-      this.currentProject.reset();
-    } else {
-      console.log("No change detected in current project. Skipping save.");
-      this.currentProject.reset();
-      this.removeProject(this.currentProject.id);
-    }
-    
     if (id) {
       const projectJson = this.getProjectById(id);
       if (projectJson) {
@@ -179,6 +177,23 @@ export class State {
     this.projects[index] = json;
     
     localStorage.setItem(id, str);
+  }
+  
+  deleteCurrentProject () {
+    const name = this.currentProject.name;
+    
+    if (confirm(`Are you sure you want to delete the project ${name}?`)) {
+      console.log(`Okay, deleteing project ${name}.`);
+      
+      this.currentProject.reset();
+      this.removeProject(this.currentProject.id);
+      
+      if (this.numProjects === 0) {
+        this.createProject(document.querySelector('projects-list').updateCurrentProjectInput);
+      } else {
+        this.openProject(this.projects[0].id, document.querySelector('projects-list').updateCurrentProjectInput);
+      }
+    }
   }
   
   get numProjects () {

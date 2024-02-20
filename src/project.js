@@ -16,8 +16,6 @@ export class Project {
     this.simulation = simulation;
     
     this.defaultContext = simulation.defaultContext;
-    
-    this.state = null;
   }
   
   async initialize (interfaceState) {

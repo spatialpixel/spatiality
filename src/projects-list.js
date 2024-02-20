@@ -21,12 +21,18 @@ class ProjectsList extends HTMLElement {
   connectedCallback () {
     const newProjectButton = this.shadowRoot.querySelector('#new-project');
     newProjectButton.addEventListener('click', event => {
+      this.state.currentProject.reset();
       this.state.createProject(this.updateCurrentProjectInput);
     });
     
     const saveProjectButton = this.shadowRoot.querySelector('#save-project');
     saveProjectButton.addEventListener('click', event => {
       this.state.saveCurrentProject();
+    });
+    
+    const deleteProjectButton = this.shadowRoot.querySelector('#delete-project');
+    deleteProjectButton.addEventListener('click', event => {
+      this.state.deleteCurrentProject(this.updateCurrentProjectInput);
     });
   }
   
@@ -59,7 +65,21 @@ class ProjectsList extends HTMLElement {
     }
     
     item.addEventListener('click', event => {
+      if (this.state.currentProject.id === projectJson.id) { return; }
+      
       console.log(`Opening project ${projectJson.name} ${projectJson.id}`);
+      
+      // This behavior saves the current project if a change has been made.
+      // Not sure if this is really in the right place.
+      if (this.state.currentProject.hasChanged) {
+        this.state.saveCurrentProject();
+        this.state.currentProject.reset();
+      } else {
+        console.log("No change detected in current project. Skipping save.");
+        this.state.currentProject.reset();
+        this.state.removeProject(this.state.currentProject.id);
+      }
+      
       this.state.openProject(projectJson.id, this.updateCurrentProjectInput);
     });
     
