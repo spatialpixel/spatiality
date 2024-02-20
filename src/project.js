@@ -19,11 +19,18 @@ export class Project {
   async initialize (interfaceState) {
     await this.simulation.initialize(interfaceState);
     await this.chat.initialize(this.simulation.defaultContext);
+    
+    this.originalJson = JSON.stringify(this.json);
   }
   
   reset () {
     this.chat.reset();
     this.simulation.reset();
+  }
+  
+  get hasChanged () {
+    const newJson = JSON.stringify(this.json);
+    return newJson !== this.originalJson;
   }
   
   get json () {

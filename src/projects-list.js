@@ -36,7 +36,16 @@ class ProjectsList extends HTMLElement {
   
   updateProjectName (projectId, newName) {
     const projectListItem = this.shadowRoot.getElementById(projectId);
-    projectListItem.innerText = newName;
+    if (projectListItem) {
+      projectListItem.innerText = newName;
+    }
+  }
+  
+  removeProject (projectId) {
+    const projectListItem = this.shadowRoot.getElementById(projectId);
+    if (projectListItem) {
+      projectListItem.remove();
+    }
   }
 }
 

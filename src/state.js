@@ -64,9 +64,21 @@ export class State {
   }
   
   openProject (id, callback) {
-    this.saveCurrentProject();
-    
-    this.currentProject.reset();
+    if (this.currentProject.hasChanged) {
+      this.saveCurrentProject();
+      this.currentProject.reset();
+    } else {
+      this.currentProject.reset();
+      // TODO Find an event-driven way to sync this.projects with the projects-list element.
+
+      // Remove the list item.
+      const projectsList = document.querySelector('projects-list');
+      projectsList.removeProject(this.currentProject.id);
+      
+      // Remove the project from the projects list.
+      const currentId = this.currentProject.id;
+      _.remove(this.projects, project => project.id === currentId);
+    }
     
     const projectJson = this.getProjectById(id);
     if (projectJson) {
