@@ -38,7 +38,9 @@ export class PhysicsSimulation extends Simulation {
   
   restore (json) {
     // Temporary measure to keep the same simulation instance.
-    this.worldState.restore(json.worldState);
+    if (this.worldState) {
+      this.worldState.restore(json.worldState);
+    }
   }
   
   get defaultContext () {
@@ -68,7 +70,6 @@ export class PhysicsSimulation extends Simulation {
   }
   
   async initialize (interfaceState) {
-    console.debug('initialize')
     const firstInitialization = !this.worldState;
 
     if (firstInitialization) {
@@ -316,6 +317,7 @@ class WorldState {
     this.addGroundPlane();
     
     const parsedObjects = _.map(json.objects, objJson => AddObjectsFunction.parseObject(this, objJson));
+    console.debug('Found', parsedObjects)
     this.objects = _.compact(parsedObjects);
   }
 }

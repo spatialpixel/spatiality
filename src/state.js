@@ -86,6 +86,11 @@ export class State {
     const id = this.currentProject.id;
     const json = this.currentProject.json;
     const str = JSON.stringify(json);
+    
+    // TODO Store Project instances instead of the data.
+    const index = _.findIndex(this.projects, proj => proj.id === id)
+    this.projects[index] = json;
+    
     localStorage.setItem(id, str);
   }
 }
