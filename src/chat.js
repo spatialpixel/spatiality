@@ -14,19 +14,27 @@ export class Chat {
     this.messages = messages || null;
   }
   
+  get isReady () {
+    return !!this.messages;
+  }
+  
   addMessage (message) {
     this.messages.push(message);
   }
   
-  initialize (defaultContext) {
-    if (!this.messages) {
+  setDefaultContext (context) {
+    if (!this.isReady) {
       this.messages = [
         {
           "role": "system",
-          "content": defaultContext
+          "content": context
         },
       ];
     }
+  }
+  
+  initialize (interfaceState) {
+    // Intentionally empty for now.
   }
   
   reset () {

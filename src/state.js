@@ -133,6 +133,11 @@ export class State {
       // TODO Ensure simulations have a clean initialization and deallocation.
       const projectObj = restoreProject(projectJson, this.currentSimulation);
       this.currentProject = projectObj;
+      
+      // Projects will have a context already determined.
+      this.openai.populateContextWindow(this.currentProject.currentContext);
+      this.openai.disableContextWindow();
+      
       if (callback) {
         callback(projectObj);
       }

@@ -71,6 +71,13 @@
 
     <main>
       <div id="chat">
+        <div class="toolbar">
+          <dropdown-menu class="dropdown-wider">
+            <span slot="button-text">Context</span>
+            Context Window (Will disable after first chat message)
+            <textarea id="context-window"></textarea>
+          </dropdown-menu>
+        </div>
         <div id="messages"></div>
         <div id="input">
           <textarea id="prompt-input"></textarea>

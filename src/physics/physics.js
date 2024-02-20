@@ -34,6 +34,8 @@ export class PhysicsSimulation extends Simulation {
     super();
     this.worldState = worldState;
     this.lidar = null;
+    
+    this.defaultContext = `You are an assistant helping to manage a space populated with geometric objects and shapes.`;
   }
   
   async initialize (interfaceState) {
@@ -60,10 +62,6 @@ export class PhysicsSimulation extends Simulation {
     if (this.worldState) {
       this.worldState.restore(json.worldState);
     }
-  }
-  
-  get defaultContext () {
-    return `You are an assistant helping to manage a space populated with geometric objects and shapes.`
   }
   
   get toolSchemas () {

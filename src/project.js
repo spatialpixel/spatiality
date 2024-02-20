@@ -15,14 +15,24 @@ export class Project {
     this.chat = chat;
     this.simulation = simulation;
     
+    this.defaultContext = simulation.defaultContext;
+    
     this.state = null;
   }
   
   async initialize (interfaceState) {
     await this.simulation.initialize(interfaceState);
-    await this.chat.initialize(this.simulation.defaultContext);
+    this.chat.initialize(interfaceState);
     
     this.originalJson = JSON.stringify(this.json);
+  }
+  
+  get currentContext () {
+    if (this.chat.isReady) {
+      return this.chat.messages[0].content;
+    } else {
+      return this.defaultContext;
+    }
   }
   
   reset () {

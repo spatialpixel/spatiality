@@ -10,11 +10,7 @@
 
 export class Simulation {
   constructor () {
-    
-  }
-  
-  get defaultContext () {
-    return `You are a helpful assistant..`
+    this.defaultContext = `You are a helpful assistant.`
   }
   
   get toolSchemas () {

@@ -26,10 +26,11 @@ export class OpenAIInterface {
   // =============================================================================
   // UI Stuff - TODO: Consider moving to its own module.
   
-  initializeUIBehaviors () {
+  initializeUIBehaviors (interfaceState) {
     this.addStorageBehaviorToApiKeyInput();
     this.addToggleVisibilityButton();
     this.initializePromptInputs();
+    this.initializeContextWindow();
     this.updateApiNoticeVisibility();
   }
   
@@ -69,7 +70,7 @@ export class OpenAIInterface {
     toggleButton.addEventListener('click', togglePasswordVisibility);
   }
   
-  initializePromptInputs (interfaceState) {
+  initializePromptInputs () {
     const promptInput = document.getElementById('prompt-input');
     
     if (!promptInput) {
@@ -87,6 +88,8 @@ export class OpenAIInterface {
       
       promptInput.value = '';
       promptInput.disabled = false;
+      
+      this.state.saveCurrentProject();
     };
     
     promptInput.addEventListener('keydown', async event => {
@@ -97,6 +100,22 @@ export class OpenAIInterface {
     });
     
     Interface.initializeButton("#send-prompt", submit.bind(this));
+  }
+  
+  initializeContextWindow () {
+    Interface.initializeTextInput('#context-window', (value, event) => {
+      this.state.currentProject.defaultContext = value;
+    }, () => this.state.currentProject.defaultContext);
+  }
+  
+  populateContextWindow (context) {
+    const contextWindow = document.querySelector('#context-window');
+    contextWindow.value = context;
+  }
+  
+  disableContextWindow () {
+    const contextWindow = document.querySelector('#context-window');
+    contextWindow.disabled = true;
   }
   
   // =============================================================================
@@ -140,16 +159,17 @@ export class OpenAIInterface {
   // TODO: there's probably a better way to handle UI updates, but some responses
   // we want to show but aren't actually messages of the chat itself.
   async chat (prompt) {
+    console.log(`Attempting to chat via OpenAI API with prompt:`, prompt);
+
     const chat = this.state.currentChat;
     const toolSchemas = this.state.currentSimulation.toolSchemas;
     const availableFunctions = this.state.currentSimulation.availableFunctions;
     
     try {
-      console.log(`Attempting to chat via OpenAI API with prompt:`, prompt);
       if (!this._openai) {
         this.instantiate();
       }
-
+      
       // Add the user's prompt to the list regardless of whether an error is thrown.
       const newMessage = {
         "role": "user",
@@ -161,9 +181,14 @@ export class OpenAIInterface {
         throw new Error("Tried to chat with OpenAI but the OpenAI instance wasn't ready. Perhaps a missing API key?");
       }
       
+      // Now that the OpenAI instance has been instantiated, ensure the
+      // default context is added.
+      if (!chat.isReady) {
+        chat.setDefaultContext(this.state.currentProject.defaultContext);
+        this.disableContextWindow();
+      }
       
-      
-      // Now that the OpenAI instance has been instantiated, add the prompt
+      // add the prompt
       // to the list of messages. This ensures the chat's continuity.
       chat.addMessage(newMessage);
       
