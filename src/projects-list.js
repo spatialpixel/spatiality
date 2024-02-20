@@ -19,6 +19,8 @@ class ProjectsList extends HTMLElement {
   }
   
   populate (state) {
+    this.state = state;
+
     const list = this.shadowRoot.querySelector('.projects');
     for (const project of state.projects) {
       const item = document.createElement('button');
@@ -38,6 +40,26 @@ class ProjectsList extends HTMLElement {
 
       list.appendChild(item);
     }
+  }
+  
+  addProject (project) {
+    const list = this.shadowRoot.querySelector('.projects');
+    const item = document.createElement('button');
+    
+    item.classList.add('project');
+    item.id = project.id;
+    item.innerText = project.name;
+    
+    item.addEventListener('click', event => {
+      console.log(`Opening project ${project.name} ${project.id}`);
+      
+      this.state.openProject(project.id, projectObj => {
+        const projectNameInput = document.getElementById('project-name-input');
+        projectNameInput.value = projectObj.name;
+      });
+    });
+    
+    list.appendChild(item);
   }
   
   updateProjectName (projectId, newName) {

@@ -1,3 +1,10 @@
+/**
+ * @module Spatiality.ProjectRestore
+ * @description Module to help restore (load) a Project from saved data.
+ * @author William Martin
+ * @version 0.1.0
+ */
+
 import { Project } from './project.js';
 import { restoreChat } from './chat.js';
 import { restoreSimulation } from './physics/physics.js';

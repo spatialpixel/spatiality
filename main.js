@@ -15,14 +15,9 @@ import * as Messages from './src/messages-list.js';
 
 // The global state object. Instantiated as a singleton.
 import { State } from './src/state.js';
-import * as Project from './src/project.js';
-
-// The simulation we currently have.
-import * as Physics from './src/physics/physics.js';
 
 // The hosted LLM AI we want to use.
 import * as OpenAI from './src/openai.js';
-import { Chat } from './src/chat.js';
 
 // The global State singleton.
 let state
@@ -47,13 +42,15 @@ const sketch = p => {
   };
 
   const interfaceState = {
-    animatePhysics: true,
     renderObjects: true,
     renderOutlines: true,
     darkMode: false,
     drawAxes: true,
     colorScheme: lightModeColors,
     cam: null,
+
+    // TODO Move these to the PhysicsSimulation state.
+    animatePhysics: true,
     showLidar: false,
   };
 
@@ -61,30 +58,9 @@ const sketch = p => {
     const canvasSize = getCanvasSize();
     p.createCanvas(canvasSize.width, canvasSize.height, p.WEBGL);
 
+    // Create the global state singleton, which also creates the default Project,
+    // populates the project list, and manages the list of Projects.
     state = new State();
-
-    // Create the simulation frist.
-    const newSim = new Physics.PhysicsSimulation();
-    
-    // Instantiate a Chat object, but pass in the default context.
-    const newChat = new Chat();
-
-    // Create a project from the chat and simulation.
-    state.currentProject = new Project.Project(newChat, newSim, `New Project ${state.numProjects + 1}`);
-    
-    Interface.initializeTextInput('#project-name-input', (value, event) => {
-        const oldName = state.currentProject.name;
-        state.currentProject.name = value;
-
-        // TODO Create CustomEvents for things like this in the future that affect
-        // potentially multiple components.
-        const projectsList = document.querySelector('projects-list');
-        projectsList.updateProjectName(state.currentProject.id, state.currentProject.name);
-        
-        state.saveCurrentProject();
-      },
-      () => state.currentProject.name
-    );
     
     // Create the LLM context.
     state.openai = new OpenAI.OpenAIInterface(state, Messages.addMessageToList);
@@ -97,15 +73,6 @@ const sketch = p => {
     // Disable right click for the benefit of EasyCam.
     const sim = document.querySelector('#simulation');
     sim.oncontextmenu = function() { return false; };
-    
-    // Populate the projects list.
-    state.projects.push(state.currentProject.json);
-    const projectsList = document.querySelector('projects-list');
-    if (projectsList) {
-      projectsList.populate(state);
-    } else {
-      console.error('Could not find the projects-list element.');
-    }
   } // end setup
   
   p.draw = function () {

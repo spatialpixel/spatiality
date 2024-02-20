@@ -5,6 +5,13 @@
  * @version 0.1.0
  */
  
+import * as Project from './project.js';
+// The only simulation we currently have.
+import * as Physics from './physics/physics.js';
+import { Chat } from './chat.js';
+
+import * as Interface from './interface.js';
+
 import { restoreProject } from './project-restore.js';
 import _ from 'lodash';
 
@@ -14,6 +21,11 @@ export class State {
     this.currentProject = null;
 
     this.loadAllProjects();
+    this.populateProjectsList();
+
+    this.currentProject = this.createDefaultProject();
+    
+    this.initializeUI();
   }
   
   loadAllProjects () {
@@ -34,29 +46,57 @@ export class State {
     }
   }
   
-  get numProjects () {
-    return this.projects.length;
-  }
-
-  get currentChat () {
-    return this.currentProject.chat;
-  }
-  
-  get currentSimulation () {
-    return this.currentProject.simulation;
+  populateProjectsList () {
+    const projectsList = document.querySelector('projects-list');
+    if (projectsList) {
+      projectsList.populate(this);
+    } else {
+      console.error('Could not find the projects-list element.');
+    }
   }
   
-  get availableFunctions () {
-    return this.currentSimulation.availableFunctions;
+  addProject (projectJson) {
+    const projectsList = document.querySelector('projects-list');
+    if (projectsList) {
+      projectsList.addProject(projectJson);
+      this.projects.push(projectJson);
+    }
   }
   
-  get toolSchemas () {
-    return this.currentSimulation.toolSchemas;
+  createDefaultProject () {
+    // Create the simulation frist.
+    const newSim = new Physics.PhysicsSimulation();
+    
+    // Instantiate a Chat object, but pass in the default context.
+    const newChat = new Chat();
+    
+    // Create a project from the chat and simulation.
+    const defaultProjectName = `New Project ${this.numProjects + 1}`;
+    const newProject = new Project.Project(newChat, newSim, defaultProjectName);
+    return newProject;
   }
   
   async initialize (interfaceState) {
     await this.openai.initialize();
     await this.currentProject.initialize(interfaceState);
+    
+    this.addProject(this.currentProject.json);
+  }
+  
+  initializeUI () {
+    Interface.initializeTextInput('#project-name-input', (value, event) => {
+        const oldName = this.currentProject.name;
+        this.currentProject.name = value;
+    
+        // TODO Create CustomEvents for things like this in the future that affect
+        // potentially multiple components.
+        const projectsList = document.querySelector('projects-list');
+        projectsList.updateProjectName(this.currentProject.id, this.currentProject.name);
+        
+        this.saveCurrentProject();
+      },
+      () => this.currentProject.name
+    );
   }
   
   reset () {
@@ -109,5 +149,25 @@ export class State {
     this.projects[index] = json;
     
     localStorage.setItem(id, str);
+  }
+  
+  get numProjects () {
+    return this.projects.length;
+  }
+  
+  get currentChat () {
+    return this.currentProject.chat;
+  }
+  
+  get currentSimulation () {
+    return this.currentProject.simulation;
+  }
+  
+  get availableFunctions () {
+    return this.currentSimulation.availableFunctions;
+  }
+  
+  get toolSchemas () {
+    return this.currentSimulation.toolSchemas;
   }
 }
