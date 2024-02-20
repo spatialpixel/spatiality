@@ -98,7 +98,7 @@ export class PhysicsSimulation extends Simulation {
       const cubeParams = {
         objectType: 'cube',
         position: { x, y, z },
-        rotation: { x: 0, y: 0, z: 0, w: 0 },
+        rotation: { x: 0, y: 0, z: 0, w: 1 },
         dimensions: { length: 1, width: 1, height: 1}
       };
       
@@ -116,7 +116,7 @@ export class PhysicsSimulation extends Simulation {
       const cubeParams = {
         objectType: 'sphere',
         position: { x, y, z },
-        rotation: { x: 0, y: 0, z: 0, w: 0 },
+        rotation: { x: 0, y: 0, z: 0, w: 1 },
         dimensions: { length: 1, width: 1, height: 1}
       };
 
