@@ -476,6 +476,10 @@ article li {
   font-weight: var(--long-text-weight);
 }
 
+p.small {
+  font-size: 1.0rem;
+}
+
 a {
   color: var(--text-color);
   text-decoration: none;
