@@ -64,17 +64,11 @@ export class State {
     }
   }
   
-  addProject (projectJson) {
-    const projectsList = document.querySelector('projects-list');
-    if (projectsList) {
-      projectsList.addProject(projectJson);
-      this.projects.push(projectJson);
-    }
-  }
-  
   createDefaultProject () {
-    // Create the simulation first.
-    const newSim = new Physics.PhysicsSimulation();
+    // Create the simulation.
+    // TODO Rapier is stateful, so we can't replace the simulation instance, only reset it.
+    // This is the cause of a lot of needless complexity.
+    const newSim = this.currentProject?.simulation || new Physics.PhysicsSimulation();
     
     // Instantiate an empty Chat object.
     const newChat = new Chat();
@@ -105,8 +99,29 @@ export class State {
     this.currentProject.reset();
   }
   
+  // TODO Find an event-driven way to sync this.projects with the projects-list element.
+  addProject (projectJson) {
+    const projectsList = document.querySelector('projects-list');
+    projectsList.addProject(projectJson);
+    
+    // Add to projects list.
+    this.projects.push(projectJson);
+  }
+  
+  removeProject (projectId) {
+    const projectsList = document.querySelector('projects-list');
+    projectsList.removeProject(projectId);
+    
+    // Remove the project from the projects list.
+    _.remove(this.projects, project => project.id === projectId);
+  }
+  
   getProjectById (id) {
     return _.find(this.projects, proj => proj.id === id);
+  }
+  
+  createProject (callback) {
+    this.openProject(null, callback);
   }
   
   openProject (id, callback) {
@@ -114,39 +129,47 @@ export class State {
       this.saveCurrentProject();
       this.currentProject.reset();
     } else {
-      console.log("No change detected. Skipping save.");
+      console.log("No change detected in current project. Skipping save.");
       this.currentProject.reset();
-      // TODO Find an event-driven way to sync this.projects with the projects-list element.
-
-      // Remove the list item.
-      const projectsList = document.querySelector('projects-list');
-      projectsList.removeProject(this.currentProject.id);
-      
-      // Remove the project from the projects list.
-      const currentId = this.currentProject.id;
-      _.remove(this.projects, project => project.id === currentId);
+      this.removeProject(this.currentProject.id);
     }
     
-    const projectJson = this.getProjectById(id);
-    if (projectJson) {
-      // For now, hold onto the current simulation.
-      // TODO Ensure simulations have a clean initialization and deallocation.
-      const projectObj = restoreProject(projectJson, this.currentSimulation);
+    if (id) {
+      const projectJson = this.getProjectById(id);
+      if (projectJson) {
+        // For now, hold onto the current simulation.
+        // TODO Ensure simulations have a clean initialization and deallocation.
+        const projectObj = restoreProject(projectJson, this.currentSimulation);
+        this.currentProject = projectObj;
+        
+        // Projects will have a context already determined.
+        this.openai.populateContextWindow(this.currentProject.currentContext);
+        this.openai.disableContextWindow();
+        
+        if (callback) {
+          callback(projectObj);
+        }
+      } else {
+        console.warn(`Tried to open project with id ${id} but couldn't find it.`)
+      }
+    } else {
+      // Create a new project.
+      const projectObj = this.createDefaultProject();
+      this.addProject(projectObj.json);
       this.currentProject = projectObj;
       
-      // Projects will have a context already determined.
       this.openai.populateContextWindow(this.currentProject.currentContext);
-      this.openai.disableContextWindow();
-      
+      this.openai.enableContextWindow();
+
       if (callback) {
         callback(projectObj);
       }
-    } else {
-      console.warn(`Tried to open project with id ${id} but couldn't find it.`)
     }
   }
   
   saveCurrentProject () {
+    console.log(`Saving the current project: ${this.currentProject.name}`);
+
     const id = this.currentProject.id;
     const json = this.currentProject.json;
     const str = JSON.stringify(json);

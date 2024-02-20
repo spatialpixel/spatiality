@@ -5,17 +5,19 @@
  * @version 0.1.0
  */
 
+import * as Messages from './messages-list.js';
+
 import { v4 as uuidv4 } from 'uuid';
 
 export class Chat {
   constructor (id, model, messages) {
     this.id = id || uuidv4();
     this.model = model || "gpt-4-1106-preview";
-    this.messages = messages || null;
+    this.messages = messages || [];
   }
   
   get isReady () {
-    return !!this.messages;
+    return this.messages.length > 0;
   }
   
   addMessage (message) {
@@ -38,7 +40,8 @@ export class Chat {
   }
   
   reset () {
-    // Intentionally empty for now.
+    this.messages = [];
+    Messages.clearList();
   }
   
   get json () {

@@ -133,7 +133,14 @@
           --primary-color-lightened: #f4e1a8;
         }
         
-        button {
+        button.action {
+          border: 2px solid black;
+          border-radius: 3px;
+          background-color: white;
+          padding: 5px 6px;
+          font-size: 1rem;
+        }
+        button.project {
           font-size: 1.2rem;
           border: none;
           display: block;
@@ -149,15 +156,24 @@
         button:active {
           background-color: var(--primary-color);
         }
-        ul {
-          list-style-type: none;
-          padding: 0;
-          margin: 0;
-          text-indent: 0;
-          font-size: 1.0rem;
+        button.project.current {
+          background-color: var(--primary-color);
+        }
+        
+        .actions {
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          border-bottom: 2px solid black;
+          padding-bottom: 6px;
+          margin-bottom: 10px;
         }
       </style>
       
+      <div class="actions">
+        <button class="action" id="new-project">New Project</button>
+        <button class="action" id="save-project">Save Current Project</button>
+      </div>
       <div class="projects">
       </div>
     </template>

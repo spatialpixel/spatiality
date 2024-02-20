@@ -113,6 +113,11 @@ export class OpenAIInterface {
     contextWindow.value = context;
   }
   
+  enableContextWindow () {
+    const contextWindow = document.querySelector('#context-window');
+    contextWindow.disabled = false;
+  }
+  
   disableContextWindow () {
     const contextWindow = document.querySelector('#context-window');
     contextWindow.disabled = true;

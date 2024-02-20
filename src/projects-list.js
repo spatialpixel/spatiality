@@ -4,7 +4,7 @@
  * @author William Martin
  * @version 0.1.0
  */
-
+ 
 class ProjectsList extends HTMLElement {
   constructor () {
     super();
@@ -18,48 +18,62 @@ class ProjectsList extends HTMLElement {
     this.shadowRoot.appendChild(templateContent.cloneNode(true));
   }
   
+  connectedCallback () {
+    const newProjectButton = this.shadowRoot.querySelector('#new-project');
+    newProjectButton.addEventListener('click', event => {
+      this.state.createProject(this.updateCurrentProjectInput);
+    });
+    
+    const saveProjectButton = this.shadowRoot.querySelector('#save-project');
+    saveProjectButton.addEventListener('click', event => {
+      this.state.saveCurrentProject();
+    });
+  }
+  
+  updateCurrentProjectInput (projectObj) {
+    const projectNameInput = document.getElementById('project-name-input');
+    projectNameInput.value = projectObj.name;
+  }
+  
   populate (state) {
     this.state = state;
 
-    const list = this.shadowRoot.querySelector('.projects');
+    const listRef = this.shadowRoot.querySelector('.projects');
     for (const project of state.projects) {
-      const item = document.createElement('button');
-
-      item.classList.add('project');
-      item.id = project.id;
-      item.innerText = project.name;
-      
-      item.addEventListener('click', event => {
-        console.log(`Opening project ${project.name} ${project.id}`);
-        
-        state.openProject(project.id, projectObj => {
-          const projectNameInput = document.getElementById('project-name-input');
-          projectNameInput.value = projectObj.name;
-        });
-      });
-
-      list.appendChild(item);
+      this.addProject(project, listRef);
     }
   }
   
-  addProject (project) {
-    const list = this.shadowRoot.querySelector('.projects');
+  addProject (projectJson, listRef=null) {
+    const list = listRef || this.shadowRoot.querySelector('.projects');
     const item = document.createElement('button');
     
     item.classList.add('project');
-    item.id = project.id;
-    item.innerText = project.name;
+    item.id = projectJson.id;
+    item.innerText = projectJson.name;
+    
+    if (projectJson.id === this.state.currentProject?.id) {
+      item.classList.add('current');
+    } else {
+      item.classList.remove('current');
+    }
     
     item.addEventListener('click', event => {
-      console.log(`Opening project ${project.name} ${project.id}`);
-      
-      this.state.openProject(project.id, projectObj => {
-        const projectNameInput = document.getElementById('project-name-input');
-        projectNameInput.value = projectObj.name;
-      });
+      console.log(`Opening project ${projectJson.name} ${projectJson.id}`);
+      this.state.openProject(projectJson.id, this.updateCurrentProjectInput);
     });
     
     list.appendChild(item);
+  }
+  
+  updateProjectsList () {
+    const projects = this.shadowRoot.querySelectorAll('.project');
+    for (const project of projects) {
+      project.classList.remove('current');
+      if (project.id === this.state.currentProject.id) {
+        project.classList.add('current');
+      }
+    }
   }
   
   updateProjectName (projectId, newName) {
