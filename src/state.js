@@ -72,6 +72,7 @@ export class State {
       this.saveCurrentProject();
       this.currentProject.reset();
     } else {
+      console.log("No change detected. Skipping save.");
       this.currentProject.reset();
       // TODO Find an event-driven way to sync this.projects with the projects-list element.
 
