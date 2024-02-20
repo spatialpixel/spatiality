@@ -1,3 +1,9 @@
+/**
+ * @module Spatiality.ProjectsList
+ * @description WebComponent that manages the list of user's projects.
+ * @author William Martin
+ * @version 0.1.0
+ */
 
 class ProjectsList extends HTMLElement {
   constructor () {

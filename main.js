@@ -11,6 +11,7 @@ import './src/projects-list.js';
 
 import * as Interface from './src/interface.js';
 import * as Helpers from './src/helpers.js';
+import * as Messages from './src/messages-list.js';
 
 // The global state object. Instantiated as a singleton.
 import { State } from './src/state.js';
@@ -26,13 +27,6 @@ import { Chat } from './src/chat.js';
 // The global State singleton.
 let state
 
-function addMessageToList (text) {
-  const messagesElt = document.querySelector('#messages');
-  const child = document.createElement('div');
-  child.classList.add('message');
-  child.innerText = text;
-  messagesElt.prepend(child);
-}
 
 // TODO Consider making p5.js part of the Simulation.
 const sketch = p => {
@@ -93,7 +87,7 @@ const sketch = p => {
     );
     
     // Create the LLM context.
-    state.openai = new OpenAI.OpenAIInterface(state, addMessageToList);
+    state.openai = new OpenAI.OpenAIInterface(state, Messages.addMessageToList);
 
     // Initialize everything.
     await state.initialize(interfaceState);

@@ -317,7 +317,6 @@ class WorldState {
     this.addGroundPlane();
     
     const parsedObjects = _.map(json.objects, objJson => AddObjectsFunction.parseObject(this, objJson));
-    console.debug('Found', parsedObjects)
     this.objects = _.compact(parsedObjects);
   }
 }

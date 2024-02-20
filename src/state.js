@@ -13,6 +13,10 @@ export class State {
     this.openai = null;
     this.currentProject = null;
 
+    this.loadAllProjects();
+  }
+  
+  loadAllProjects () {
     this.projects = [];
 
     for (let i = 0; i < localStorage.length; i ++) {
