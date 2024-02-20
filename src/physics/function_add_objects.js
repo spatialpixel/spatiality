@@ -64,7 +64,7 @@ export const schema = {
                   },
                   "w": {
                     "type": "number",
-                    "description": "The w quaternion rotation value. This should always be a number. The default value should be 0."
+                    "description": "The w quaternion rotation value. This should always be a number. The default value should be 1."
                   }
                 }
               }, // end rotation property
