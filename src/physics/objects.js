@@ -150,18 +150,19 @@ export class Sphere extends RigidObject{
     super(worldState, startPosition, dimensions, startRotation, id);
     
     this.objectTypeName = "Sphere";
-    const len = this.dimensions.length / 2.0,
-      wid = this.dimensions.width / 2.0,
-      hei = this.dimensions.height / 2.0;
     
-    const radius = (this.dimensions.diameter / 2.0) || this.dimensions.radius || len || wid || hei;
-  
-    let colliderDesc = window.RAPIER.ColliderDesc.ball(radius);
+    const len = (this.dimensions.length || 0) / 2.0,
+      wid = (this.dimensions.width || 0) / 2.0,
+      hei = (this.dimensions.height || 0) / 2.0;
+    
+    this.radius = (this.dimensions.diameter / 2.0) || this.dimensions.radius || len || wid || hei || 0.5;
+    
+    let colliderDesc = window.RAPIER.ColliderDesc.ball(this.radius);
     this.collider = this.world.createCollider(colliderDesc, this.rigidBody);
   }
   
   drawShape (p) {
     p.strokeWeight(0.2);
-    p.sphere(this.length / 2.0, 12, 12);
+    p.sphere(this.radius, 12, 12);
   }
 }

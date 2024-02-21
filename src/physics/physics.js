@@ -136,6 +136,35 @@ export class PhysicsSimulation extends Simulation {
     Interface.initializeCheckbox('#toggle-lidar', (value, event) => {
       interfaceState.physics.showLidar = !interfaceState.physics.showLidar;
     });
+    
+    Interface.initializeButton('#drop-100-spheres', () => {
+      // Let's add 100 spheres but with a delay, instead of all at once.
+      this.dropSpheres(100);
+    });
+  }
+  
+  dropSpheres (num) {
+    let numSpheres = 0;
+    const interval = setInterval(() => {
+      const r = 3;
+      const radius = 0.2;
+      
+      const x = 0 + Math.random() * r - r / 2;
+      const y = 10.0 + Math.random() * r - r / 2; // vertical axis
+      const z = 0 + Math.random() * r - r / 2;
+      
+      const sphereParams = {
+        objectType: 'sphere',
+        position: { x, y, z },
+        rotation: { x: 0, y: 0, z: 0, w: 1 },
+        dimensions: { radius }
+      };
+      
+      this.availableFunctions.add_objects({ objects: [sphereParams] });
+      
+      numSpheres += 1;
+      if (numSpheres >= num) { clearTimeout(interval); }
+    }, 200);
   }
   
   reset () {
