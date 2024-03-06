@@ -26,8 +26,8 @@ let state
 const sketch = p => {
   // Put any sketch-specific state here.
   const darkModeColors = {
-    backgroundColor: p.color('black'),
-    objectFillColor: p.color('black'),
+    backgroundColor: p.color('#222'),
+    objectFillColor: p.color('#222'),
     objectStrokeColor: p.color('gray'),
     pointCloudColor: p.color(255, 255, 255, 128),
     highlightColor: p.color('#eac451'),
