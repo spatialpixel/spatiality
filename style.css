@@ -355,6 +355,7 @@ template {
 
 :root {
   --text-color: #333;
+  --border-color: #333;
   --background-color: white;
   --standard-padding: 6px;
   --long-text-weight: normal;
@@ -376,6 +377,7 @@ template {
     --text-color: #ddd;
     --text-links: #444;
     --background-color: #222;
+    --border-color: #ddd;
   }
 }
 
@@ -426,6 +428,7 @@ input#project-name-input {
   border: none;
 }
 input#project-name-input:hover {
+  color: #222;
   background-color: var(--primary-color-lightened);
 }
 
@@ -497,7 +500,7 @@ a:hover {
 
 hr {
   border: none;
-  background-color: black;
+  background-color: var(--border-color);
   height: 2px;
 }
 
@@ -530,29 +533,29 @@ mark,
   background-color: var(--accent-color);
   color: var(--text-color);
 }
-.toggler:hover,
-.highlight-on-hover:hover {
-  background-color: var(--accent-color);
-  cursor: pointer;
-}
 
 input, textarea {
   border: 1px solid gray;
   border-radius: 3px;
   padding: 8px;
   font-size: 1.2rem;
+  color: var(--text-color);
+  background-color: var(--background-color);
 }
 button {
-  border: 2px solid black;
+  border: 2px solid var(--border-color);
   border-radius: 3px;
-  background-color: white;
+  color: var(--text-color);
+  background-color: var(--background-color);
   padding: 5px 6px;
   font-size: 1rem;
 }
 button:hover {
+  color: #222;
   background-color: var(--primary-color-lightened);
 }
 button:active {
+  color: #222;
   background-color: var(--primary-color);
 }
 
@@ -563,7 +566,7 @@ main {
 }
 
 #chat {
-  border: 2px solid black;
+  border: 2px solid var(--border-color);
   height: calc(100vh - 90px);
   width: 50%;
   display: flex;
@@ -577,7 +580,7 @@ main {
 }
 #input {
   min-height: 70px;
-  border-top: 2px solid black;
+  border-top: 2px solid var(--border-color);
   padding: 10px;
   display: flex;
   flex-direction: row;
@@ -592,7 +595,7 @@ textarea#context-window {
 textarea#prompt-input {
   flex-grow: 2;
   resize: none;
-  border: 1px solid black;
+  border: 1px solid var(--border-color);
   border-radius: 3px;
 }
 button#send-prompt {
@@ -601,13 +604,13 @@ button#send-prompt {
 
 .message {
   padding: 10px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--border-color);
 }
 
 #simulation {
   position: relative;
   width: 49%;
-  border: 2px solid black;
+  border: 2px solid var(--border-color);
   height: calc(100vh - 90px);
   overflow: hidden;
   display: flex;
@@ -652,7 +655,7 @@ button#send-prompt {
 }
 label {
   font-size: 1.0rem;
-  color: black;
+  color: var(--text-color);
 }
 
 #open-api-key-form {

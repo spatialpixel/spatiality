@@ -136,9 +136,10 @@
         }
         
         button.action {
-          border: 2px solid black;
+          border: 2px solid var(--border-color);
           border-radius: 3px;
-          background-color: white;
+          color: var(--text-color);
+          background-color: var(--background-color);
           padding: 5px 6px;
           font-size: 1rem;
         }
@@ -146,19 +147,23 @@
           font-size: 1.2rem;
           border: none;
           display: block;
-          background-color: white;
+          color: var(--text-color);
+          background-color: var(--background-color);
           padding: 4px;
           width: 100%;
           text-align: left;
           border: none !important;
         }
         button:hover {
+          color: #222;
           background-color: var(--primary-color-lightened);
         }
         button:active {
+          color: #222;
           background-color: var(--primary-color);
         }
         button.project.current {
+          color: #222;
           background-color: var(--primary-color);
         }
         
@@ -166,7 +171,7 @@
           display: flex;
           flex-direction: row;
           gap: 10px;
-          border-bottom: 2px solid black;
+          border-bottom: 2px solid var(--border-color);
           padding-bottom: 6px;
           margin-bottom: 10px;
         }
@@ -213,10 +218,11 @@
           right: var(--dropdown-right);
           max-height: 75vh;
           padding: 8px;
+          color: var(--text-color);
       
-          background-color: white;
+          background-color: var(--background-color);
           box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-          border: 2px solid black;
+          border: 2px solid var(--border-color);
           border-radius: 3px;
         
           font-size: 1.0rem;
@@ -227,7 +233,7 @@
             display: block;
         }
         .dropdown-content a {
-            color: black;
+            color: var(--text-color);
             padding: 12px 16px;
             text-decoration: none;
             display: block;
@@ -240,11 +246,14 @@
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
           border: var(--dropdown-button-border);
           border-radius: 3px;
-          background-color: white;
+          color: var(--text-color);
+          background-color: var(--background-color);
           padding: 4px 6px;
           font-size: var(--dropdown-button-font-size);
+          border-color: var(--border-color);
         }
         button:hover {
+          color: #222;
           background-color: var(--primary-color-lightened);
         }
         button:active {
@@ -254,13 +263,15 @@
         ::slotted(button) {
           border: none;
           display: block;
-          background-color: white;
+          color: var(--text-color);
+          background-color: var(--background-color);
           padding: 4px;
           width: 100%;
           text-align: left;
           border: none !important;
         }
         ::slotted(button:hover) {
+          color: #222;
           background-color: var(--primary-color-lightened);
         }
         ::slotted(button:active) {
@@ -272,6 +283,7 @@
           margin: 0;
           text-indent: 0;
           font-size: 1.0rem;
+          color: var(--text-color);
         }
       </style>
       <div class="dropdown">
