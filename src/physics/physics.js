@@ -8,6 +8,7 @@
 import * as AddObjectsFunction from './function_add_objects.js';
 import * as RemoveObjectsFunction from './function_remove_objects.js';
 import * as GetSpatialLayoutFunction from './function_get_spatial_layout.js';
+import * as ClusterObjectsFunction from './function_cluster_objects.js';
 
 import { Simulation } from '../simulation.js';
 
@@ -67,6 +68,7 @@ export class PhysicsSimulation extends Simulation {
   get toolSchemas () {
     return [
       GetSpatialLayoutFunction.schema,
+      ClusterObjectsFunction.schema,
       AddObjectsFunction.schema,
       RemoveObjectsFunction.schema,
     ];
@@ -83,6 +85,9 @@ export class PhysicsSimulation extends Simulation {
       "remove_objects": args => {
         return RemoveObjectsFunction.remove_objects(this.worldState, args);
       },
+      "cluster_objects": args => {
+        return ClusterObjectsFunction.cluster_objects(this.worldState, args);
+      }
     };
   }
   
